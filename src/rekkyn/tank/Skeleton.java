@@ -1,55 +1,110 @@
 package rekkyn.tank;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.newdawn.slick.*;
+import org.newdawn.slick.state.StateBasedGame;
 
 public class Skeleton {
     
-    public HashMap<Point, Segment> segments = new HashMap<Point, Segment>();
+    public List<Segment> segments = new ArrayList<Segment>();
     
     public Skeleton() {
-        segments.put(new Point(0, 0), new Heart());
+        segments.add(new Heart(0, 0));
     }
     
     public Skeleton addSegment(int x, int y) {
-        Point p = new Point(x, y);
-        Iterator it = segments.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry) it.next();
-            if (p.equals(pairs.getKey())) {
-                return this;
-            }
+        for (Segment s : segments) {
+            if (s.x == x && s.y == y || s.x == y && s.y == x) return this;
         }
         
-        segments.put(p, new Segment());
+        segments.add(new Segment(x, y));
+        if (x != y) {
+            segments.add(new Segment(y, x));
+        }
         return this;
     }
     
+    public Segment getSegment(int x, int y) {
+        
+        for (Segment s : segments) {
+            if (s.x == x && s.y == y) {
+                return s;
+            }
+        }
+        System.err.println("Segment not found.");
+        return null;
+    }
+    
     public class Segment {
+        
+        public int x, y;
+        public Element[] elements = new Element[9];
+        
+        public Segment(int x, int y) {
+            this.x = x;
+            this.y = y;
+        }
+        
+        public Segment addElement(Element e, int location) {
+            if (this instanceof Heart) {
+                System.err.println("You can't add elements to hearts.");
+                return this;
+            }
+            if (e.type == ElementType.CENTRE && location != 8 || e.type == ElementType.EDGE && location == 8) {
+                System.err.println("Invalid placement for element: " + e.toString());
+                return this;
+            }
+            if (elements[location] != null) {
+                System.err.println("Tried to put an element in a taken spot;");
+                return this;
+            }
+            elements[location] = e;
+            return this;
+        }
+        
+        public Segment addMotor(boolean mirror) {
+            addElement(new Motor(), 8);
+            if (mirror) {
+                getSegment(y, x).addElement(new Motor(), 8);
+            }
+            return this;
+        }
     }
     
     public class Heart extends Segment {
         
+        public Heart(int x, int y) {
+            super(x, y);
+        }
     }
     
-    public class Point {
-        int x, y;
+    public class Element {
+        public ElementType type;
         
-        public Point(int x, int y) {
-            if (x >= y) {
-                this.x = x;
-                this.y = y;
-            } else {
-                this.x = y;
-                this.y = x;
-            }
+        public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
+    }
+    
+    public class Motor extends Element {
+        public Motor() {
+            type = ElementType.CENTRE;
         }
         
         @Override
-        public boolean equals(Object obj) {
-            if (obj instanceof Point) {
-                if (x == ((Point) obj).x && y == ((Point) obj).y) return true;
-            }
-            return false;
+        public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+            g.setColor(Color.black);
+            g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
         }
+        
+        @Override
+        public String toString() {
+            return "motor";
+        }
+    }
+    
+    public enum ElementType {
+        EDGE,
+        CENTRE
     }
 }
