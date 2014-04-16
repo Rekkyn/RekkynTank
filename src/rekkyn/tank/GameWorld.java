@@ -8,6 +8,8 @@ import org.newdawn.slick.*;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.Colours.ColourSets;
+
 public class GameWorld extends BasicGameState {
     
     float accumulator = 0.0F;
@@ -96,7 +98,9 @@ public class GameWorld extends BasicGameState {
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         g.setAntiAlias(true);
         
-        g.setColor(new Color(233, 242, 249));
+        Colours.setColourSet(ColourSets.SNAZZY);
+        
+        g.setColor(Colours.getBackground());
         g.fillRect(0, 0, Game.width, Game.height);
         
         for (int i = 0; i < entities.size(); i++) {

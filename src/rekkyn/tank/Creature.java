@@ -67,9 +67,9 @@ public class Creature extends Entity {
             float drawX = x + p.x;
             float drawY = -y - p.y;
             if (s instanceof Heart) {
-                g.setColor(new Color(225, 112, 51));
+                g.setColor(Colours.getAccent());
             } else {
-                g.setColor(new Color(27, 50, 95));
+                g.setColor(Colours.getBody());
             }
             g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
             if (p.x != p.y) {
@@ -96,7 +96,7 @@ public class Creature extends Entity {
             Segment s = (Segment) pairs.getValue();
             float drawX = x + p.x;
             float drawY = -y - p.y;
-            g.setColor(new Color(0, 0, 0, 0.25F));
+            g.setColor(Colours.getShadow());
             g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
             if (p.x != p.y) {
                 drawX = x + p.y;
