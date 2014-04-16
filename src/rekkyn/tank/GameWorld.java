@@ -13,14 +13,13 @@ public class GameWorld extends BasicGameState {
     float accumulator = 0.0F;
     public static long tickCount = 0;
     public static float partialTicks;
-    public static int timespeeds = 0;
     public static final float TIMESTEP = 50F / 3F;
     
     public static List<Entity> entities = new ArrayList<Entity>();
     
     public static Random rand = new Random();
     
-    public static World physicsWorld = new World(new Vec2(0, 0));
+    public static World physicsWorld = new World(new Vec2(0, -9.8F));
     
     public GameWorld() {
     }
@@ -81,6 +80,10 @@ public class GameWorld extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         physicsWorld.setContinuousPhysics(true);
+        
+        add(new Creature(0, 0));
+        add(new Creature(0, 3));
+        add(new Wall(0, -20, 20, 2));
     }
     
     @Override
