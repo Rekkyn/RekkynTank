@@ -19,7 +19,7 @@ public class GameWorld extends BasicGameState {
     
     public static Random rand = new Random();
     
-    public static World physicsWorld = new World(new Vec2(0, -9.8F));
+    public static World physicsWorld = new World(new Vec2(0, -1));
     
     public GameWorld() {
     }
@@ -82,7 +82,13 @@ public class GameWorld extends BasicGameState {
         physicsWorld.setContinuousPhysics(true);
         
         add(new Creature(0, 0));
-        add(new Creature(0, 3));
+        Creature c1 = new Creature(0, 5);
+        c1.angle = (float) Math.toRadians(45);
+        add(c1);
+        Creature c11 = new Creature(0, 10);
+        c11.angle = (float) Math.toRadians(-45);
+        add(c11);
+        
         add(new Wall(0, -20, 20, 2));
     }
     
@@ -93,6 +99,13 @@ public class GameWorld extends BasicGameState {
         g.setColor(new Color(233, 242, 249));
         g.fillRect(0, 0, Game.width, Game.height);
         
+        for (int i = 0; i < entities.size(); i++) {
+            Entity e = entities.get(i);
+            
+            e.prerender(g);
+            e.renderBackground(container, game, g);
+            e.postrender(g);
+        }
         for (int i = 0; i < entities.size(); i++) {
             Entity e = entities.get(i);
             

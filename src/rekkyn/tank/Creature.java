@@ -37,10 +37,11 @@ public class Creature extends Entity {
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(0.5F, 0.5F, new Vec2(drawX, drawY), (float) Math.toRadians(45));
             body.createFixture(shape, 1).setFriction(0.2F);
+            System.out.println(angle);
             
             if (p.x != p.y) {
-                drawX = (float) (p.y * Math.cos(Math.PI / 4) - p.y * Math.sin(Math.PI / 4));
-                drawY = (float) (p.x * Math.sin(Math.PI / 4) + p.x * Math.cos(Math.PI / 4));
+                drawX = (float) (p.y * Math.cos(Math.PI / 4) - p.x * Math.sin(Math.PI / 4));
+                drawY = (float) (p.y * Math.sin(Math.PI / 4) + p.x * Math.cos(Math.PI / 4));
                 
                 PolygonShape shape1 = new PolygonShape();
                 shape1.setAsBox(0.5F, 0.5F, new Vec2(drawX, drawY), (float) Math.toRadians(45));
@@ -79,4 +80,31 @@ public class Creature extends Entity {
         }
         g.popTransform();
     }
+    
+    @Override
+    public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+        super.render(container, game, g);
+        g.pushTransform();
+        g.rotate(x, -y, -45);
+        float dist = (float) (1 / Math.sqrt(8));
+        g.translate((float) -(Math.sin(angle) * dist), (float) (Math.cos(angle) * dist));
+        
+        Iterator it = skeleton.segments.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            Point p = (Point) pairs.getKey();
+            Segment s = (Segment) pairs.getValue();
+            float drawX = x + p.x;
+            float drawY = -y - p.y;
+            g.setColor(new Color(0, 0, 0, 0.25F));
+            g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
+            if (p.x != p.y) {
+                drawX = x + p.y;
+                drawY = -y - p.x;
+                g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
+            }
+        }
+        g.popTransform();
+    }
+    
 }

@@ -11,6 +11,7 @@ import org.newdawn.slick.state.StateBasedGame;
 public abstract class Entity {
     
     public float x, y;
+    /** The angle of the entity in radians */
     public float angle;
     public float prevX, prevY;
     public Vec2 velocity;
@@ -38,7 +39,7 @@ public abstract class Entity {
         physicsWorld = GameWorld.physicsWorld;
         def = new BodyDef();
         def.position.set(x, y);
-        def.angle = (float) Math.toRadians(angle);
+        def.angle = angle;
         def.type = BodyType.DYNAMIC;
         body = GameWorld.physicsWorld.createBody(def);
     }
@@ -62,11 +63,13 @@ public abstract class Entity {
         g.scale(Camera.zoom, Camera.zoom);
         g.translate(GameWorld.partialTicks * (x - prevX) - Camera.x + Game.width / Camera.zoom / 2, GameWorld.partialTicks * (prevY - y)
                 + Camera.y + Game.height / Camera.zoom / 2);
+        g.rotate(x, -y, (float) Math.toDegrees(-angle));
     }
     
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        g.rotate(x, -y, (float) (-angle * 180 / Math.PI));
     }
+    
+    public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
     
     public void postrender(Graphics g) {
         g.popTransform();
