@@ -23,8 +23,8 @@ public class Game extends StateBasedGame {
     public static void main(String[] args) {
         
         GameServer server = new GameServer();
-        GameClient client = new GameClient();
-
+        GameClient client = new GameClient("Rekkyn");
+        
         try {
             appgc = new AppGameContainer(new Game(NAME));
             // width = appgc.getScreenWidth();

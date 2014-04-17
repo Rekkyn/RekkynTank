@@ -1,17 +1,16 @@
 package rekkyn.tank.network.server;
 
-import rekkyn.tank.Game;
 import rekkyn.tank.network.NetworkManager.Login;
+import rekkyn.tank.network.NetworkManager.LoginResult;
 
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.*;
 
 public class ServerListener extends Listener {
     
-    public Game game;
+    public Server server;
     
-    public ServerListener() {
-        // game = game;
+    public ServerListener(Server server) {
+        this.server = server;
     }
     
     @Override
@@ -22,8 +21,12 @@ public class ServerListener extends Listener {
     
     @Override
     public void received(Connection c, Object o) {
+        System.out.println("recieved");
         if (o instanceof Login) {
             System.out.println("[SERVER] " + ((Login) o).name + " logged in.");
+            LoginResult lr = new LoginResult();
+            lr.result = true;
+            c.sendTCP(lr);
         }
     }
 }

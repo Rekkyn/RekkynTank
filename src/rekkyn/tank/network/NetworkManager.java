@@ -9,21 +9,19 @@ public class NetworkManager {
     
     public static void register(EndPoint endPoint) {
         Kryo kryo = endPoint.getKryo();
-        kryo.register(KeepAlive.class);
         kryo.register(Login.class);
         kryo.register(LoginResult.class);
-    }
-    
-    public static class KeepAlive {
-        
+        kryo.register(User.class);
     }
     
     public static class Login {
+        public User user;
         public String name;
     }
     
     public static class LoginResult {
         public boolean result;
+        public String reason;
     }
     
 }
