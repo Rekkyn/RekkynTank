@@ -13,6 +13,7 @@ public abstract class Entity {
     public float x, y;
     /** The angle of the entity in radians */
     public float angle;
+    public float prevAngle;
     public float prevX, prevY;
     public Vec2 velocity;
     public boolean removed;
@@ -54,6 +55,7 @@ public abstract class Entity {
         
         prevX = x;
         prevY = y;
+        prevAngle = angle;
         x = body.getPosition().x;
         y = body.getPosition().y;
         angle = body.getAngle();
@@ -66,6 +68,7 @@ public abstract class Entity {
         g.translate(GameWorld.partialTicks * (x - prevX) - Camera.x + Game.width / Camera.zoom / 2, GameWorld.partialTicks * (prevY - y)
                 + Camera.y + Game.height / Camera.zoom / 2);
         g.rotate(x, -y, (float) Math.toDegrees(-angle));
+        g.rotate(x, -y, GameWorld.partialTicks * (float) Math.toDegrees(-angle + prevAngle));
     }
     
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
