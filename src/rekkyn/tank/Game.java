@@ -4,6 +4,9 @@ package rekkyn.tank;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.network.client.GameClient;
+import rekkyn.tank.network.server.GameServer;
+
 public class Game extends StateBasedGame {
     
     static AppGameContainer appgc;
@@ -15,11 +18,13 @@ public class Game extends StateBasedGame {
     
     public Game(String name) {
         super(name);
-        
     }
     
     public static void main(String[] args) {
         
+        GameServer server = new GameServer();
+        GameClient client = new GameClient();
+
         try {
             appgc = new AppGameContainer(new Game(NAME));
             // width = appgc.getScreenWidth();
