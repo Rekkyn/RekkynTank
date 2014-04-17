@@ -3,14 +3,18 @@ package rekkyn.tank;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class Skeleton {
     
+    public Creature creature;
+    
     public List<Segment> segments = new ArrayList<Segment>();
     
-    public Skeleton() {
+    public Skeleton(Creature creature) {
+        this.creature = creature;
         segments.add(new Heart(0, 0));
     }
     
@@ -65,9 +69,10 @@ public class Skeleton {
         }
         
         public Segment addMotor(boolean mirror) {
-            addElement(new Motor(), 8);
-            if (mirror) {
-                getSegment(y, x).addElement(new Motor(), 8);
+            addElement(new Motor(this), 8);
+            if (mirror && x != y) {
+                Segment s = getSegment(y, x);
+                s.addElement(new Motor(s), 8);
             }
             return this;
         }
@@ -82,13 +87,31 @@ public class Skeleton {
     
     public class Element {
         public ElementType type;
+        public Segment segment;
+        
+        public Element(Segment s) {
+            segment = s;
+        }
         
         public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
+        
+        public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {}
+        
     }
     
     public class Motor extends Element {
-        public Motor() {
+        
+        public float power = 0;
+        
+        public Motor(Segment s) {
+            super(s);
             type = ElementType.CENTRE;
+        }
+        
+        @Override
+        public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+            creature.body.applyForce(new Vec2((float) (Math.cos(creature.angle) * power), (float) (Math.sin(creature.angle) * power)),
+                    creature.body.getWorldPoint(creature.getPosOnBody(segment.x, segment.y)));
         }
         
         @Override

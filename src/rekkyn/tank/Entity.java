@@ -42,6 +42,8 @@ public abstract class Entity {
         def.angle = angle;
         def.type = BodyType.DYNAMIC;
         body = GameWorld.physicsWorld.createBody(def);
+        body.setLinearDamping(1F);
+        body.setAngularDamping(1F);
     }
     
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {

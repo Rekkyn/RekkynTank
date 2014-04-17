@@ -9,10 +9,12 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.Colours.ColourSets;
+import rekkyn.tank.Skeleton.Motor;
 
 public class GameWorld extends BasicGameState {
     
     float accumulator = 0.0F;
+    public Creature player = new Creature(0, 0);
     public static long tickCount = 0;
     public static float partialTicks;
     public static final float TIMESTEP = 50F / 3F;
@@ -21,7 +23,7 @@ public class GameWorld extends BasicGameState {
     
     public static Random rand = new Random();
     
-    public static World physicsWorld = new World(new Vec2(0, -1));
+    public static World physicsWorld = new World(new Vec2(0, 0));
     
     public GameWorld() {
     }
@@ -65,6 +67,25 @@ public class GameWorld extends BasicGameState {
         }
         Camera.update();
         
+        Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
+        Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
+        float power = 50;
+        if (input.isKeyDown(Input.KEY_W)) {
+            ml.power = power;
+        } else if (input.isKeyDown(Input.KEY_S)) {
+            ml.power = -power;
+        } else {
+            ml.power = 0;
+        }
+        
+        if (input.isKeyDown(Input.KEY_R)) {
+            mr.power = power;
+        } else if (input.isKeyDown(Input.KEY_F)) {
+            mr.power = -power;
+        } else {
+            mr.power = 0;
+        }
+        
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
         
         for (int i = 0; i < entities.size(); i++) {
@@ -83,15 +104,15 @@ public class GameWorld extends BasicGameState {
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         physicsWorld.setContinuousPhysics(true);
         
-        add(new Creature(0, 0));
+        add(player);
         Creature c1 = new Creature(0, 5);
         c1.angle = (float) Math.toRadians(45);
         add(c1);
-        Creature c11 = new Creature(0, 10);
+        Creature c11 = new Creature(0, 20);
         c11.angle = (float) Math.toRadians(-45);
         add(c11);
         
-        add(new Wall(0, -20, 20, 2));
+        add(new Wall(0, -20, 50, 2));
     }
     
     @Override

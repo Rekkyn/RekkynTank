@@ -11,7 +11,7 @@ import rekkyn.tank.Skeleton.Segment;
 
 public class Creature extends Entity {
     
-    public Skeleton skeleton = new Skeleton();
+    public Skeleton skeleton = new Skeleton(this);
     
     public Creature(float x, float y) {
         super(x, y);
@@ -25,11 +25,8 @@ public class Creature extends Entity {
         skeleton.getSegment(2, 0).addMotor(true);
         
         for (Segment s : skeleton.segments) {
-            float drawX = (float) (s.x * Math.cos(Math.PI / 4) - s.y * Math.sin(Math.PI / 4));
-            float drawY = (float) (s.x * Math.sin(Math.PI / 4) + s.y * Math.cos(Math.PI / 4));
-            
             PolygonShape shape = new PolygonShape();
-            shape.setAsBox(0.5F, 0.5F, new Vec2(drawX, drawY), (float) Math.toRadians(45));
+            shape.setAsBox(0.5F, 0.5F, getPosOnBody(s.x, s.y), (float) Math.toRadians(45));
             body.createFixture(shape, 1).setFriction(0.2F);
         }
         
@@ -38,10 +35,29 @@ public class Creature extends Entity {
     }
     
     @Override
+    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+        super.update(container, game, delta);
+        for (Segment s : skeleton.segments) {
+            for (Element e : s.elements) {
+                if (e != null) {
+                    e.update(container, game, delta);
+                }
+            }
+        }
+    }
+    
+    public Vec2 getPosOnBody(int x, int y) {
+        float rotX = (float) (x * Math.cos(-Math.PI / 4) - y * Math.sin(-Math.PI / 4));
+        float rotY = (float) (x * Math.sin(-Math.PI / 4) + y * Math.cos(-Math.PI / 4));
+        
+        return new Vec2(rotX, rotY);
+    }
+    
+    @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
         g.pushTransform();
-        g.rotate(x, -y, -45);
+        g.rotate(x, -y, 45);
         for (Segment s : skeleton.segments) {
             float drawX = x + s.x;
             float drawY = -y - s.y;
@@ -67,9 +83,9 @@ public class Creature extends Entity {
     public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
         g.pushTransform();
-        g.rotate(x, -y, -45);
+        g.rotate(x, -y, 45);
         float dist = (float) (1 / Math.sqrt(8));
-        g.translate((float) -(Math.sin(angle) * dist), (float) (Math.cos(angle) * dist));
+        g.translate((float) (Math.cos(angle) * dist), (float) (Math.sin(angle) * dist));
         
         for (Segment s : skeleton.segments) {
             float drawX = x + s.x;
