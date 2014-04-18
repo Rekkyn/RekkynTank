@@ -15,7 +15,7 @@ public class Skeleton {
     
     public Skeleton(Creature creature) {
         this.creature = creature;
-        segments.add(new Heart(0, 0));
+        segments.add(new Heart(0, 0, creature));
     }
     
     public Skeleton addSegment(int x, int y) {
@@ -23,9 +23,9 @@ public class Skeleton {
             if (s.x == x && s.y == y || s.x == y && s.y == x) return this;
         }
         
-        segments.add(new Segment(x, y));
+        segments.add(new Segment(x, y, creature));
         if (x != y) {
-            segments.add(new Segment(y, x));
+            segments.add(new Segment(y, x, creature));
         }
         return this;
     }
@@ -45,10 +45,14 @@ public class Skeleton {
         
         public int x, y;
         public Element[] elements = new Element[9];
+        public Creature creature;
         
-        public Segment(int x, int y) {
+        public Vec2 contact;
+        
+        public Segment(int x, int y, Creature creature) {
             this.x = x;
             this.y = y;
+            this.creature = creature;
         }
         
         public Segment addElement(Element e, int location) {
@@ -76,12 +80,18 @@ public class Skeleton {
             }
             return this;
         }
+        
+        public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+            g.setColor(Color.yellow);
+            if (contact != null)
+ g.fillOval(contact.x - 0.0625F, -contact.y - 0.0625F, 0.125F, 0.125F);
+        }
     }
     
     public class Heart extends Segment {
         
-        public Heart(int x, int y) {
-            super(x, y);
+        public Heart(int x, int y, Creature creature) {
+            super(x, y, creature);
         }
     }
     
@@ -124,6 +134,15 @@ public class Skeleton {
         public String toString() {
             return "motor";
         }
+    }
+    
+    public class Mouth extends Element {
+        
+        public Mouth(Segment s) {
+            super(s);
+            type = ElementType.EDGE;
+        }
+        
     }
     
     public enum ElementType {

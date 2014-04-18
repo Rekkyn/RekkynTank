@@ -24,10 +24,13 @@ public class Creature extends Entity {
         skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(2, 1);
         skeleton.getSegment(2, 0).addMotor(true);
         
+        /*skeleton.addSegment(0, 2).addSegment(0, 1).addSegment(0, -1).addSegment(-1, -1).addSegment(1, -1).addSegment(1, 1);
+        skeleton.getSegment(2, 0).addMotor(true);*/
+        
         for (Segment s : skeleton.segments) {
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(0.5F, 0.5F, getPosOnBody(s.x, s.y), (float) Math.toRadians(45));
-            body.createFixture(shape, 1).setFriction(0.2F);
+            body.createFixture(shape, 1).setUserData(s);
         }
         
         body.setBullet(true);
@@ -69,6 +72,7 @@ public class Creature extends Entity {
             g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
             g.pushTransform();
             g.translate(x + s.x, -y - s.y);
+            s.render(container, game, g);
             for (Element e : s.elements) {
                 if (e != null) {
                     e.render(container, game, g);
@@ -81,7 +85,7 @@ public class Creature extends Entity {
     
     @Override
     public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        super.render(container, game, g);
+        super.renderBackground(container, game, g);
         g.pushTransform();
         g.rotate(x, -y, 45);
         float dist = (float) (1 / Math.sqrt(8));

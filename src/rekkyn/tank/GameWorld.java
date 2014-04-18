@@ -102,6 +102,8 @@ public class GameWorld extends BasicGameState {
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
+        TheContactListener listener = new TheContactListener();
+        physicsWorld.setContactListener(listener);
         physicsWorld.setContinuousPhysics(true);
         
         add(player);
@@ -111,6 +113,8 @@ public class GameWorld extends BasicGameState {
         Creature c11 = new Creature(0, 20);
         c11.angle = (float) Math.toRadians(-45);
         add(c11);
+        
+        add(new Food(5, 0));
         
         add(new Wall(0, -20, 50, 2));
     }
