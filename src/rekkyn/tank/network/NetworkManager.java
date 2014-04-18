@@ -12,16 +12,20 @@ public class NetworkManager {
         kryo.register(Login.class);
         kryo.register(LoginResult.class);
         kryo.register(User.class);
+        kryo.register(AddUser.class);
     }
     
     public static class Login {
-        public User user;
         public String name;
     }
     
     public static class LoginResult {
         public boolean result;
         public String reason;
+    }
+    
+    public static class AddUser {
+        public User user;
     }
     
 }
