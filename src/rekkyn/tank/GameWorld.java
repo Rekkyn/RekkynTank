@@ -114,7 +114,9 @@ public class GameWorld extends BasicGameState {
         c11.angle = (float) Math.toRadians(-45);
         add(c11);
         
-        add(new Food(5, 0));
+        for (int lol = 0; lol < 50; lol++) {
+            add(new Food(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25));
+        }
         
         add(new Wall(0, -20, 50, 2));
     }

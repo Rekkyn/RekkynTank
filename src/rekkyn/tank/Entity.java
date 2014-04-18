@@ -79,7 +79,4 @@ public abstract class Entity {
     public void postrender(Graphics g) {
         g.popTransform();
     }
-    
-    public void onHit() {}
-    
 }

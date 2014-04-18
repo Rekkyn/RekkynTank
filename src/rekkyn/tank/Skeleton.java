@@ -48,12 +48,13 @@ public class Skeleton {
         public Element[] elements = new Element[9];
         public Creature creature;
         
-        public Vec2 contact;
-        
         public Segment(int x, int y, Creature creature) {
             this.x = x;
             this.y = y;
             this.creature = creature;
+            for (int i = 0; i < elements.length; i++) {
+                elements[i] = new BlankElement();
+            }
         }
         
         public Segment addElement(Element e, int location) {
@@ -68,7 +69,7 @@ public class Skeleton {
             }
             
             if (location == 0) {
-                if (elements[0] != null || elements[7] != null) {
+                if (!(elements[0] instanceof BlankElement) || !(elements[7] instanceof BlankElement)) {
                     System.err.println("Tried to put an element in a taken spot;");
                     return this;
                 }
@@ -77,7 +78,7 @@ public class Skeleton {
                 return this;
                 
             } else if (location == 8) {
-                if (elements[8] != null) {
+                if (!(elements[8] instanceof BlankElement)) {
                     System.err.println("Tried to put an element in a taken spot;");
                     return this;
                 }
@@ -86,7 +87,7 @@ public class Skeleton {
                 return this;
                 
             } else {
-                if (elements[location] != null || elements[location - 1] != null) {
+                if (!(elements[location] instanceof BlankElement) || !(elements[location - 1] instanceof BlankElement)) {
                     System.err.println("Tried to put an element in a taken spot;");
                     return this;
                 }
@@ -107,11 +108,9 @@ public class Skeleton {
         
         public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
             g.setColor(Color.yellow);
-            if (contact != null)
-                g.fillOval(contact.x - 0.0625F, -contact.y - 0.0625F, 0.125F, 0.125F);
             
             g.setColor(Color.cyan);
-            if (elements[0] != null) {
+            if (!(elements[0] instanceof BlankElement)) {
                 Polygon p0 = new Polygon();
                 p0.addPoint(0.5F, -0.5F);
                 p0.addPoint(0.5F, 0);
@@ -119,7 +118,7 @@ public class Skeleton {
                 p0.addPoint(0.25F, -0.25F);
                 g.fill(p0);
             }
-            if (elements[1] != null) {
+            if (!(elements[1] instanceof BlankElement)) {
                 Polygon p1 = new Polygon();
                 p1.addPoint(0.5F, 0.5F);
                 p1.addPoint(0.5F, 0);
@@ -127,7 +126,7 @@ public class Skeleton {
                 p1.addPoint(0.25F, 0.25F);
                 g.fill(p1);
             }
-            if (elements[2] != null) {
+            if (!(elements[2] instanceof BlankElement)) {
                 Polygon p2 = new Polygon();
                 p2.addPoint(0, 0.5F);
                 p2.addPoint(0, 0.25F);
@@ -135,7 +134,7 @@ public class Skeleton {
                 p2.addPoint(0.5F, 0.5F);
                 g.fill(p2);
             }
-            if (elements[3] != null) {
+            if (!(elements[3] instanceof BlankElement)) {
                 Polygon p3 = new Polygon();
                 p3.addPoint(0, 0.5F);
                 p3.addPoint(0, 0.25F);
@@ -143,7 +142,7 @@ public class Skeleton {
                 p3.addPoint(-0.5F, 0.5F);
                 g.fill(p3);
             }
-            if (elements[4] != null) {
+            if (!(elements[4] instanceof BlankElement)) {
                 Polygon p4 = new Polygon();
                 p4.addPoint(-0.5F, 0.5F);
                 p4.addPoint(-0.5F, 0);
@@ -151,7 +150,7 @@ public class Skeleton {
                 p4.addPoint(-0.25F, 0.25F);
                 g.fill(p4);
             }
-            if (elements[5] != null) {
+            if (!(elements[5] instanceof BlankElement)) {
                 Polygon p5 = new Polygon();
                 p5.addPoint(-0.5F, -0.5F);
                 p5.addPoint(-0.5F, 0);
@@ -159,7 +158,7 @@ public class Skeleton {
                 p5.addPoint(-0.25F, -0.25F);
                 g.fill(p5);
             }
-            if (elements[6] != null) {
+            if (!(elements[6] instanceof BlankElement)) {
                 Polygon p6 = new Polygon();
                 p6.addPoint(0, -0.5F);
                 p6.addPoint(0, -0.25F);
@@ -167,7 +166,7 @@ public class Skeleton {
                 p6.addPoint(-0.5F, -0.5F);
                 g.fill(p6);
             }
-            if (elements[7] != null) {
+            if (!(elements[7] instanceof BlankElement)) {
                 Polygon p7 = new Polygon();
                 p7.addPoint(0, -0.5F);
                 p7.addPoint(0, -0.25F);
@@ -175,7 +174,7 @@ public class Skeleton {
                 p7.addPoint(0.5F, -0.5F);
                 g.fill(p7);
             }
-            if (elements[8] != null) {
+            if (!(elements[8] instanceof BlankElement)) {
                 g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
             }
         }
@@ -204,6 +203,12 @@ public class Skeleton {
         public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
         
         public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {}
+        
+        public void contact(Object o) {}
+        
+    }
+    
+    public class BlankElement extends Element {
         
     }
     
@@ -237,6 +242,14 @@ public class Skeleton {
         public Mouth(Segment s) {
             super(s);
             type = ElementType.EDGE;
+        }
+        
+        @Override
+        public void contact(Object o) {
+            super.contact(o);
+            if (o instanceof Food) {
+                ((Food) o).remove();
+            }
         }
     }
     

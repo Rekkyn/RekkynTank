@@ -45,16 +45,29 @@ public class TheContactListener implements ContactListener {
         for (int i = 0; i < contact.getManifold().pointCount; i++) {
             Vec2 globalPos = new Vec2(manifold.points[i].x, manifold.points[i].y);
             Vec2 relPos = globalPos.sub(new Vec2(s.creature.x, s.creature.y));
-            float angle = (float) (Math.PI / 4 - s.creature.angle);
-            Vec2 rotated = new Vec2((float) (relPos.x * Math.cos(angle) - relPos.y * Math.sin(angle)),
-                    (float) (relPos.x * Math.sin(angle) + relPos.y * Math.cos(angle)));
+            float rotateAngle = (float) (Math.PI / 4 - s.creature.angle);
+            Vec2 rotated = new Vec2((float) (relPos.x * Math.cos(rotateAngle) - relPos.y * Math.sin(rotateAngle)), (float) (relPos.x
+                    * Math.sin(rotateAngle) + relPos.y * Math.cos(rotateAngle)));
             Vec2 segmemtPos = rotated.sub(new Vec2(s.x, s.y));
-            s.contact = segmemtPos;
-            System.out.println(segmemtPos);
+            
+            float angle = (float) Math.atan2(segmemtPos.y, segmemtPos.x);
+            
+            s.elements[elementFromAngle(angle)].contact(o);
         }
+    }
+    
+    public int elementFromAngle(float angle) {
+        if (angle > 0 && angle < Math.PI / 4) return 0;
+        if (angle < Math.PI / 2 && angle > Math.PI / 4) return 7;
+        if (angle > Math.PI / 2 && angle < 3 * Math.PI / 4) return 6;
+        if (angle < Math.PI && angle > 3 * Math.PI / 4) return 5;
         
-        System.out.println("----------------------------------");
+        if (angle < 0 && angle > -Math.PI / 4) return 1;
+        if (angle > -Math.PI / 2 && angle < -Math.PI / 4) return 2;
+        if (angle < -Math.PI / 2 && angle > -3 * Math.PI / 4) return 3;
+        if (angle > -Math.PI && angle < -3 * Math.PI / 4) return 4;
         
+        return -1;
     }
 }
 
