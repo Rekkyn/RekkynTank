@@ -17,12 +17,14 @@ public class Creature extends Entity {
         super(x, y);
     }
     
+    @SuppressWarnings("deprecation")
     @Override
     public void init() {
         super.init();
         
         skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(2, 1);
         skeleton.getSegment(2, 0).addMotor(true);
+        skeleton.getSegment(2, 2).addElement(skeleton.new Mouth(), 0);
         
         /*skeleton.addSegment(0, 2).addSegment(0, 1).addSegment(0, -1).addSegment(-1, -1).addSegment(1, -1).addSegment(1, 1);
         skeleton.getSegment(2, 0).addMotor(true);*/
@@ -73,11 +75,6 @@ public class Creature extends Entity {
             g.pushTransform();
             g.translate(x + s.x, -y - s.y);
             s.render(container, game, g);
-            for (Element e : s.elements) {
-                if (e != null) {
-                    e.render(container, game, g);
-                }
-            }
             g.popTransform();
         }
         g.popTransform();

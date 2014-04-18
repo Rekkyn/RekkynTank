@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
+import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class Skeleton {
@@ -60,15 +61,38 @@ public class Skeleton {
                 System.err.println("You can't add elements to hearts.");
                 return this;
             }
+            
             if (e.type == ElementType.CENTRE && location != 8 || e.type == ElementType.EDGE && location == 8) {
                 System.err.println("Invalid placement for element: " + e.toString());
                 return this;
             }
-            if (elements[location] != null) {
-                System.err.println("Tried to put an element in a taken spot;");
+            
+            if (location == 0) {
+                if (elements[0] != null || elements[7] != null) {
+                    System.err.println("Tried to put an element in a taken spot;");
+                    return this;
+                }
+                
+                elements[0] = elements[7] = e;
                 return this;
+                
+            } else if (location == 8) {
+                if (elements[8] != null) {
+                    System.err.println("Tried to put an element in a taken spot;");
+                    return this;
+                }
+                
+                elements[8] = e;
+                return this;
+                
+            } else {
+                if (elements[location] != null || elements[location - 1] != null) {
+                    System.err.println("Tried to put an element in a taken spot;");
+                    return this;
+                }
+                
+                elements[location] = elements[location - 1] = e;
             }
-            elements[location] = e;
             return this;
         }
         
@@ -84,7 +108,76 @@ public class Skeleton {
         public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
             g.setColor(Color.yellow);
             if (contact != null)
- g.fillOval(contact.x - 0.0625F, -contact.y - 0.0625F, 0.125F, 0.125F);
+                g.fillOval(contact.x - 0.0625F, -contact.y - 0.0625F, 0.125F, 0.125F);
+            
+            g.setColor(Color.cyan);
+            if (elements[0] != null) {
+                Polygon p0 = new Polygon();
+                p0.addPoint(0.5F, -0.5F);
+                p0.addPoint(0.5F, 0);
+                p0.addPoint(0.25F, 0);
+                p0.addPoint(0.25F, -0.25F);
+                g.fill(p0);
+            }
+            if (elements[1] != null) {
+                Polygon p1 = new Polygon();
+                p1.addPoint(0.5F, 0.5F);
+                p1.addPoint(0.5F, 0);
+                p1.addPoint(0.25F, 0);
+                p1.addPoint(0.25F, 0.25F);
+                g.fill(p1);
+            }
+            if (elements[2] != null) {
+                Polygon p2 = new Polygon();
+                p2.addPoint(0, 0.5F);
+                p2.addPoint(0, 0.25F);
+                p2.addPoint(0.25F, 0.25F);
+                p2.addPoint(0.5F, 0.5F);
+                g.fill(p2);
+            }
+            if (elements[3] != null) {
+                Polygon p3 = new Polygon();
+                p3.addPoint(0, 0.5F);
+                p3.addPoint(0, 0.25F);
+                p3.addPoint(-0.25F, 0.25F);
+                p3.addPoint(-0.5F, 0.5F);
+                g.fill(p3);
+            }
+            if (elements[4] != null) {
+                Polygon p4 = new Polygon();
+                p4.addPoint(-0.5F, 0.5F);
+                p4.addPoint(-0.5F, 0);
+                p4.addPoint(-0.25F, 0);
+                p4.addPoint(-0.25F, 0.25F);
+                g.fill(p4);
+            }
+            if (elements[5] != null) {
+                Polygon p5 = new Polygon();
+                p5.addPoint(-0.5F, -0.5F);
+                p5.addPoint(-0.5F, 0);
+                p5.addPoint(-0.25F, 0);
+                p5.addPoint(-0.25F, -0.25F);
+                g.fill(p5);
+            }
+            if (elements[6] != null) {
+                Polygon p6 = new Polygon();
+                p6.addPoint(0, -0.5F);
+                p6.addPoint(0, -0.25F);
+                p6.addPoint(-0.25F, -0.25F);
+                p6.addPoint(-0.5F, -0.5F);
+                g.fill(p6);
+            }
+            if (elements[7] != null) {
+                Polygon p7 = new Polygon();
+                p7.addPoint(0, -0.5F);
+                p7.addPoint(0, -0.25F);
+                p7.addPoint(0.25F, -0.25F);
+                p7.addPoint(0.5F, -0.5F);
+                g.fill(p7);
+            }
+            if (elements[8] != null) {
+                g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
+            }
         }
     }
     
@@ -98,6 +191,11 @@ public class Skeleton {
     public class Element {
         public ElementType type;
         public Segment segment;
+        public Color colour;
+        
+        /** Only use this in the addElement method. */
+        @Deprecated
+        public Element() {}
         
         public Element(Segment s) {
             segment = s;
@@ -125,12 +223,6 @@ public class Skeleton {
         }
         
         @Override
-        public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-            g.setColor(Color.black);
-            g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
-        }
-        
-        @Override
         public String toString() {
             return "motor";
         }
@@ -138,11 +230,14 @@ public class Skeleton {
     
     public class Mouth extends Element {
         
+        /** Only use this in the addElement method. */
+        @Deprecated
+        public Mouth() {}
+        
         public Mouth(Segment s) {
             super(s);
             type = ElementType.EDGE;
         }
-        
     }
     
     public enum ElementType {
