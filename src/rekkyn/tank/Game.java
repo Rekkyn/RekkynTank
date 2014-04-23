@@ -14,7 +14,7 @@ public class Game extends StateBasedGame {
     public static int height = 600;
     
     public GameWorld world = new GameWorld();
-
+    
     public Game(String name) {
         super(name);
     }
@@ -27,6 +27,7 @@ public class Game extends StateBasedGame {
             // height = appgc.getScreenHeight();
             appgc.setDisplayMode(width, height, false);
             appgc.setShowFPS(false);
+            appgc.setAlwaysRender(true);
             appgc.start();
             
         } catch (SlickException e) {

@@ -1,6 +1,7 @@
 package rekkyn.tank;
 
 import java.util.*;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.World;
@@ -22,6 +23,8 @@ public class GameWorld extends BasicGameState {
     
     public HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     
+    public LinkedBlockingQueue<Entity> toAdd = new LinkedBlockingQueue<Entity>();
+    
     public Random rand = new Random();
     
     public World physicsWorld = new World(new Vec2(0, 0));
@@ -39,9 +42,9 @@ public class GameWorld extends BasicGameState {
         accumulator += delta;
         
         while (accumulator >= TIMESTEP) {
-            if (container.hasFocus()) {
-                tick(container, game, delta);
-            }
+            // if (container.hasFocus()) {
+            tick(container, game, delta);
+            // }
             accumulator -= TIMESTEP;
         }
         partialTicks = accumulator / TIMESTEP;
@@ -90,9 +93,18 @@ public class GameWorld extends BasicGameState {
             mr.power = 0;
         }*/
         
+        // SERVER THINGS
         if (server != null) {
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                 add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
+            }
+        }
+        
+        // CLIENT THINGS
+        if (client != null) {
+            Entity e;
+            while ((e = toAdd.poll()) != null) {
+                add(e);
             }
         }
         
@@ -176,7 +188,12 @@ public class GameWorld extends BasicGameState {
     
     public void add(Entity entity) {
         entity.removed = false;
-        int id = getNextID();
+        int id;
+        // if ((Integer) entity.id == null) {
+        id = getNextID();
+        // } else {
+        // id = entity.id;
+        // }
         entities.put(id, entity);
         entity.id = id;
         entity.init();

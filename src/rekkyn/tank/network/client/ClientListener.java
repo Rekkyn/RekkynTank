@@ -45,8 +45,12 @@ public class ClientListener extends Listener {
             
             e.setData(data);
             
-            world.add(e);
-
+            try {
+                world.toAdd.put(e);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+            
             System.out.println("[CLIENT] Add entity yo.");
         }
     }
