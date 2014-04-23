@@ -90,6 +90,12 @@ public class GameWorld extends BasicGameState {
             mr.power = 0;
         }*/
         
+        if (server != null) {
+            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
+            }
+        }
+        
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
         
         Iterator it = entities.entrySet().iterator();
@@ -128,8 +134,9 @@ public class GameWorld extends BasicGameState {
             Creature c11 = new Creature(0, 20, this);
             c11.angle = (float) Math.toRadians(-45);
             add(c11);
-            
-            add(new Wall(0, -20, 50, 2, this));
+            for (int lel = 0; lel < 20; lel++) {
+                add(new Wall(rand.nextFloat() * 20, rand.nextFloat() * 20, rand.nextFloat() * 5, rand.nextFloat() * 5, this));
+            }
         }
     }
     

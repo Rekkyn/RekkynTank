@@ -1,7 +1,9 @@
 package rekkyn.tank.network.client;
 
-import rekkyn.tank.Game;
+import rekkyn.tank.*;
 import rekkyn.tank.network.NetworkManager.AddEntity;
+import rekkyn.tank.network.NetworkManager.EntityData;
+import rekkyn.tank.network.NetworkManager.EntityType;
 import rekkyn.tank.network.NetworkManager.LoginResult;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -9,10 +11,10 @@ import com.esotericsoftware.kryonet.Listener;
 
 public class ClientListener extends Listener {
     
-    public Game game;
+    public GameWorld world;
     
-    public ClientListener() {
-        // game = game;
+    public ClientListener(GameWorld world) {
+        this.world = world;
     }
     
     @Override
@@ -31,6 +33,20 @@ public class ClientListener extends Listener {
                 System.out.println("[CLIENT] Connection failed: " + lr.reason);
             }
         } else if (o instanceof AddEntity) {
+            EntityData data = ((AddEntity) o).data;
+            
+            Entity e = null;
+            
+            if (data.type == EntityType.CREATURE) {
+                e = new Creature(data.x, data.y, world);
+            } else if (data.type == EntityType.WALL) {
+                e = new Wall(data.x, data.y, world);
+            }
+            
+            e.setData(data);
+            
+            world.add(e);
+
             System.out.println("[CLIENT] Add entity yo.");
         }
     }

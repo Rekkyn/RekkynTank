@@ -19,8 +19,10 @@ public class Creature extends Entity {
     public void init() {
         super.init();
         
-        skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(2, 1);
-        skeleton.getSegment(2, 0).addMotor(true);
+        if (skeleton.segments.size() <= 1) {
+            skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(2, 1);
+            skeleton.getSegment(2, 0).addMotor(true);
+        }
         
         for (Segment s : skeleton.segments) {
             PolygonShape shape = new PolygonShape();
@@ -95,8 +97,14 @@ public class Creature extends Entity {
     }
     
     @Override
-    public Object[] getData() {
-        return skeleton.getData();
+    public Object[] getSpecificData() {
+        return new Object[] { skeleton };
+    }
+    
+    @Override
+    public void setSpecificData(Object[] data) {
+        skeleton = (Skeleton) data[0];
+        skeleton.creature = this;
     }
     
 }

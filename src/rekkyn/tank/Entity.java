@@ -7,6 +7,9 @@ import org.jbox2d.dynamics.*;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.network.NetworkManager.EntityData;
+import rekkyn.tank.network.NetworkManager.EntityType;
+
 public abstract class Entity {
     
     public int id;
@@ -76,6 +79,36 @@ public abstract class Entity {
         g.popTransform();
     }
     
-    public abstract Object[] getData();
+    public EntityData getData() {
+        EntityData data = new EntityData();
+        if (this instanceof Creature) {
+            data.type = EntityType.CREATURE;
+        } else if (this instanceof Wall) {
+            data.type = EntityType.WALL;
+        }
+        
+        data.id = id;
+        data.x = x;
+        data.y = y;
+        data.angle = angle;
+        data.velocity = velocity;
+        data.removed = removed;
+        data.specificData = getSpecificData();
+        return data;
+    }
+    
+    public void setData(EntityData data) {
+        id = data.id;
+        x = data.x;
+        y = data.y;
+        angle = data.angle;
+        velocity = data.velocity;
+        removed = data.removed;
+        setSpecificData(data.specificData);
+    }
+    
+    public abstract Object[] getSpecificData();
+    
+    public abstract void setSpecificData(Object[] data);
     
 }

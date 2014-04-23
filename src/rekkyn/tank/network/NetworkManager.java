@@ -67,7 +67,7 @@ public class NetworkManager {
         public boolean removed;
         public long ticksExisted;
         
-        public Object[] data;
+        public Object[] specificData;
     }
     
     public enum EntityType {

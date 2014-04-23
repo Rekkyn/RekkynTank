@@ -18,11 +18,11 @@ public class GameClient {
         
         NetworkManager.register(client);
         
-        listener = new ClientListener();
+        listener = new ClientListener(world);
         client.addListener(listener);
         
         try {
-            client.connect(5000, "127.0.0.1", NetworkManager.port);
+            client.connect(5000, "24.207.67.56", NetworkManager.port);
         } catch (Exception e) {
             e.printStackTrace();
         }

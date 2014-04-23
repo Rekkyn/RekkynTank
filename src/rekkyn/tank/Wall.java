@@ -16,6 +16,10 @@ public class Wall extends Entity {
         
     }
     
+    public Wall(float x, float y, GameWorld world) {
+        super(x, y, world);
+    }
+    
     @Override
     public void init() {
         super.init();
@@ -29,12 +33,19 @@ public class Wall extends Entity {
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
+        g.setColor(Colours.getBody());
         g.fillRect(x - width / 2, -y - height / 2, width, height);
     }
     
     @Override
-    public Object[] getData() {
+    public Object[] getSpecificData() {
         return new Object[] { width, height };
+    }
+    
+    @Override
+    public void setSpecificData(Object[] data) {
+        width = (Float) data[0];
+        height = (Float) data[1];
     }
     
 }

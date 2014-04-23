@@ -4,11 +4,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import rekkyn.tank.*;
+import rekkyn.tank.Entity;
+import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.*;
 import rekkyn.tank.network.NetworkManager.AddEntity;
-import rekkyn.tank.network.NetworkManager.EntityData;
-import rekkyn.tank.network.NetworkManager.EntityType;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
@@ -54,21 +53,7 @@ public class GameServer {
     
     public AddEntity addEntity(Entity e) {
         AddEntity addentity = new AddEntity();
-        EntityData data = new EntityData();
-        if (e instanceof Creature) {
-            data.type = EntityType.CREATURE;
-        } else if (e instanceof Wall) {
-            data.type = EntityType.WALL;
-        }
-        
-        data.id = e.id;
-        data.x = e.x;
-        data.y = e.y;
-        data.angle = e.angle;
-        data.velocity = e.velocity;
-        data.removed = e.removed;
-        data.data = e.getData();
-        addentity.data = data;
+        addentity.data = e.getData();
         return addentity;
     }
 }

@@ -47,11 +47,7 @@ public class Skeleton {
         EDGE,
         CENTRE
     }
-    
-    public Object[] getData() {
-        return new Object[] { segments };
-    }
-    
+
     @Deprecated
     public Skeleton() {}
 }
