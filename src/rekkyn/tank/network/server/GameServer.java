@@ -1,8 +1,6 @@
 package rekkyn.tank.network.server;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import rekkyn.tank.Entity;
 import rekkyn.tank.GameWorld;
@@ -17,9 +15,7 @@ public class GameServer {
     
     public static ServerListener listener;
     
-    public List<User> users = new ArrayList<User>();
-    
-    public GameServer(GameWorld world) {
+    public GameServer(String name, GameWorld world) {
         world.server = this;
         server = new Server() {
             @Override
@@ -32,6 +28,10 @@ public class GameServer {
         
         listener = new ServerListener(server, this, world);
         server.addListener(listener);
+        
+        User user = new User(name);
+        listener.loggedIn.add(user);
+        world.addPlayer(user);
         
         try {
             server.bind(NetworkManager.port);

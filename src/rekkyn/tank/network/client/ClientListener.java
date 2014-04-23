@@ -2,9 +2,11 @@ package rekkyn.tank.network.client;
 
 import rekkyn.tank.*;
 import rekkyn.tank.network.NetworkManager.AddEntity;
+import rekkyn.tank.network.NetworkManager.AddUser;
 import rekkyn.tank.network.NetworkManager.EntityData;
 import rekkyn.tank.network.NetworkManager.EntityType;
 import rekkyn.tank.network.NetworkManager.LoginResult;
+import rekkyn.tank.network.NetworkManager.RemoveUser;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
@@ -32,6 +34,12 @@ public class ClientListener extends Listener {
             } else {
                 System.out.println("[CLIENT] Connection failed: " + lr.reason);
             }
+        } else if(o instanceof AddUser) {
+            String name = ((AddUser) o).user.name;
+            System.out.println("[CLIENT] " + name + " logged in.");
+        } else if (o instanceof RemoveUser) {
+            String name = ((RemoveUser) o).user.name;
+            System.out.println("[CLIENT] " + name + " disconnected.");
         } else if (o instanceof AddEntity) {
             EntityData data = ((AddEntity) o).data;
             
@@ -50,8 +58,6 @@ public class ClientListener extends Listener {
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
-            
-            System.out.println("[CLIENT] Add entity yo.");
         }
     }
 }

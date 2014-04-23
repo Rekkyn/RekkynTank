@@ -11,18 +11,20 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.Colours.ColourSets;
 import rekkyn.tank.network.NetworkManager.SendInput;
+import rekkyn.tank.network.User;
 import rekkyn.tank.network.client.GameClient;
 import rekkyn.tank.network.server.GameServer;
 
 public class GameWorld extends BasicGameState {
     
     float accumulator = 0.0F;
-    public Creature player = new Creature(0, 0, this);
     public long tickCount = 0;
     public float partialTicks;
     public final float TIMESTEP = 50F / 3F;
     
     public HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
+    
+    public HashMap<User, Creature> players = new HashMap<User, Creature>();
     
     public LinkedBlockingQueue<Entity> toAdd = new LinkedBlockingQueue<Entity>();
     public LinkedBlockingQueue<SendInput> inputs = new LinkedBlockingQueue<SendInput>();
@@ -105,6 +107,11 @@ public class GameWorld extends BasicGameState {
             while ((sendInput = inputs.poll()) != null) {
                 processInput(sendInput, container);
             }
+            
+            Entity e;
+            while ((e = toAdd.poll()) != null) {
+                add(e);
+            }
         }
         
         // CLIENT THINGS
@@ -161,13 +168,6 @@ public class GameWorld extends BasicGameState {
     
     public void initServer() {
         if (server != null) {
-            add(player);
-            Creature c1 = new Creature(0, 5, this);
-            c1.angle = (float) Math.toRadians(45);
-            add(c1);
-            Creature c11 = new Creature(0, 20, this);
-            c11.angle = (float) Math.toRadians(-45);
-            add(c11);
             for (int lel = 0; lel < 20; lel++) {
                 add(new Wall(rand.nextFloat() * 20, rand.nextFloat() * 20, rand.nextFloat() * 5, rand.nextFloat() * 5, this));
             }
@@ -247,6 +247,19 @@ public class GameWorld extends BasicGameState {
     @Override
     public int getID() {
         return Game.WORLD;
+    }
+    
+    public void addPlayer(User user) {
+        if (server != null) {
+            Creature player = new Creature(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this);
+            player.angle = (float) (rand.nextFloat() * 2F * Math.PI);
+            try {
+                toAdd.put(player);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            players.put(user, player);
+        }
     }
     
 }

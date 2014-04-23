@@ -24,6 +24,7 @@ public class NetworkManager {
         kryo.register(LoginResult.class);
         kryo.register(User.class);
         kryo.register(AddUser.class);
+        kryo.register(RemoveUser.class);
         kryo.register(AddEntity.class);
         kryo.register(EntityData.class);
         kryo.register(Object[].class);
@@ -57,6 +58,10 @@ public class NetworkManager {
         public User user;
     }
     
+    public static class RemoveUser {
+        public User user;
+    }
+    
     public static class AddEntity {
         public EntityData data;
     }
@@ -79,6 +84,7 @@ public class NetworkManager {
     public static class SendInput {
         public boolean[] mousePressed = new boolean[3];
         public Vec2 mousePos;
+        public boolean[] pressed = new boolean[1024];
         public User user;
     }
     

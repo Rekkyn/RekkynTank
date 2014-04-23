@@ -24,9 +24,13 @@ public class Menu extends BasicGameState {
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         int i = s.nextInt();
         if (i == 0) {
-            GameServer server = new GameServer(((Game) game).world);
+            System.out.println("Please enter your username:");
+            String name = s.next();
+            GameServer server = new GameServer(name, ((Game) game).world);
         } else if (i == 1) {
-            GameClient client = new GameClient("Rekkyn", ((Game) game).world);
+            System.out.println("Please enter your username:");
+            String name = s.next();
+            GameClient client = new GameClient(name, ((Game) game).world);
         }
         game.enterState(Game.WORLD);
     }

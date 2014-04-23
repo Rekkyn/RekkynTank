@@ -7,6 +7,7 @@ import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.NetworkManager.AddUser;
 import rekkyn.tank.network.NetworkManager.Login;
 import rekkyn.tank.network.NetworkManager.LoginResult;
+import rekkyn.tank.network.NetworkManager.RemoveUser;
 import rekkyn.tank.network.NetworkManager.SendInput;
 import rekkyn.tank.network.*;
 import rekkyn.tank.network.server.GameServer.UserConnection;
@@ -31,7 +32,11 @@ public class ServerListener extends Listener {
     public void connected(Connection c) {}
     
     @Override
-    public void disconnected(Connection c) {}
+    public void disconnected(Connection c) {
+        UserConnection connection = (UserConnection) c;
+        User user = connection.user;
+        logOut(connection, user);
+    }
     
     @Override
     public void received(Connection c, Object o) {
@@ -95,6 +100,7 @@ public class ServerListener extends Listener {
         AddUser addUser = new AddUser();
         addUser.user = user;
         server.sendToAllTCP(addUser);
+        world.addPlayer(user);
         
         System.out.println("[SERVER] " + user.name + " logged in.");
         
@@ -105,5 +111,16 @@ public class ServerListener extends Listener {
             Entity e = (Entity) pairs.getValue();
             c.sendTCP(gameServer.addEntity(e));
         }
+    }
+    
+    private void logOut(UserConnection c, User user) {
+        
+        loggedIn.remove(user);
+        
+        RemoveUser removeUser = new RemoveUser();
+        removeUser.user = user;
+        server.sendToAllTCP(removeUser);
+        
+        System.out.println("[SERVER] " + user.name + " disconnected.");
     }
 }
