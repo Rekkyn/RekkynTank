@@ -18,7 +18,7 @@ public abstract class Entity {
     /** The angle of the entity in radians */
     public float angle;
     public float prevX, prevY;
-    public Vec2 velocity;
+    public Vec2 velocity = new Vec2(0, 0);
     public boolean removed;
     public long ticksExisted = 0;
     Input input;
@@ -29,6 +29,8 @@ public abstract class Entity {
     
     public GameWorld world;
     public static World physicsWorld;
+    
+    public EntityData sentData;
     
     public Entity(float x, float y, GameWorld world) {
         this.x = x;
@@ -105,6 +107,9 @@ public abstract class Entity {
         velocity = data.velocity;
         removed = data.removed;
         setSpecificData(data.specificData);
+        
+        body.setTransform(new Vec2(x, y), angle);
+        body.setLinearVelocity(velocity);
     }
     
     public abstract Object[] getSpecificData();

@@ -10,8 +10,11 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.Colours.ColourSets;
+import rekkyn.tank.network.NetworkManager.AddEntity;
+import rekkyn.tank.network.NetworkManager.EntityData;
+import rekkyn.tank.network.NetworkManager.EntityType;
 import rekkyn.tank.network.NetworkManager.SendInput;
-import rekkyn.tank.network.User;
+import rekkyn.tank.network.*;
 import rekkyn.tank.network.client.GameClient;
 import rekkyn.tank.network.server.GameServer;
 import rekkyn.tank.skeleton.Motor;
@@ -27,8 +30,7 @@ public class GameWorld extends BasicGameState {
     
     public HashMap<User, Creature> players = new HashMap<User, Creature>();
     
-    public LinkedBlockingQueue<Entity> toAdd = new LinkedBlockingQueue<Entity>();
-    public LinkedBlockingQueue<SendInput> inputs = new LinkedBlockingQueue<SendInput>();
+    public LinkedBlockingQueue process = new LinkedBlockingQueue();
     
     public Random rand = new Random();
     
@@ -79,20 +81,23 @@ public class GameWorld extends BasicGameState {
         }
         Camera.update();
         
+        Object o;
+        while ((o = process.poll()) != null) {
+            process(o, container);
+        }
+        
         // SERVER THINGS
         if (server != null) {
-            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
-            }
-            
-            SendInput sendInput;
-            while ((sendInput = inputs.poll()) != null) {
-                processInput(sendInput, container);
-            }
-            
-            Entity e;
-            while ((e = toAdd.poll()) != null) {
-                add(e);
+            Iterator it = entities.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pairs = (Map.Entry) it.next();
+                Entity ent = (Entity) pairs.getValue();
+                
+                EntityData data = ent.getData();
+                if (!data.equals(ent.sentData)) {
+                    server.server.sendToAllTCP(data);
+                    ent.sentData = data;
+                }
             }
             
             Creature player = players.get(server.host);
@@ -115,15 +120,14 @@ public class GameWorld extends BasicGameState {
             } else {
                 mr.power = 0;
             }
+            
+            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
+            }
         }
         
         // CLIENT THINGS
         if (client != null) {
-            Entity e;
-            while ((e = toAdd.poll()) != null) {
-                add(e);
-            }
-            
             int[] keys = new int[] { Input.KEY_W, Input.KEY_S, Input.KEY_R, Input.KEY_F };
             
             SendInput sendInput = new SendInput();
@@ -154,7 +158,29 @@ public class GameWorld extends BasicGameState {
                 entities.remove(pairs.getKey());
             }
         }
-        sendData();
+    }
+    
+    private void process(Object o, GameContainer container) {
+        if (o instanceof AddEntity) {
+            EntityData data = ((AddEntity) o).data;
+            
+            Entity e = null;
+            if (data.type == EntityType.CREATURE) {
+                e = new Creature(data.x, data.y, this);
+            } else if (data.type == EntityType.WALL) {
+                e = new Wall(data.x, data.y, this);
+            }
+            
+            add(e);
+            e.setData(data);
+        } else if (o instanceof EntityData) {
+            EntityData data = (EntityData) o;
+            entities.get(data.id).setData(data);
+        } else if (o instanceof SendInput) {
+            processInput((SendInput) o, container);
+        } else if (o instanceof Entity) {
+            add((Entity) o);
+        }
     }
     
     private void processInput(SendInput sendInput, GameContainer container) {
@@ -187,11 +213,6 @@ public class GameWorld extends BasicGameState {
         
     }
     
-    private void sendData() {
-        if (server != null) {
-        }
-    }
-    
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         physicsWorld.setContinuousPhysics(true);
@@ -199,7 +220,7 @@ public class GameWorld extends BasicGameState {
     
     public void initServer() {
         if (server != null) {
-            for (int lel = 0; lel < 20; lel++) {
+            for (int lel = 0; lel < 0; lel++) {
                 add(new Wall(rand.nextFloat() * 20, rand.nextFloat() * 20, rand.nextFloat() * 5, rand.nextFloat() * 5, this));
             }
         }
@@ -242,14 +263,14 @@ public class GameWorld extends BasicGameState {
     public void add(Entity entity) {
         entity.removed = false;
         int id;
-        // if ((Integer) entity.id == null) {
-        id = getNextID();
-        // } else {
-        // id = entity.id;
-        // }
-        entities.put(id, entity);
+        if (entity.id == 0) {
+            id = getNextID();
+        } else {
+            id = entity.id;
+        }
         entity.id = id;
         entity.init();
+        entities.put(id, entity);
         
         if (server != null) {
             server.server.sendToAllTCP(server.addEntity(entity));
@@ -257,7 +278,7 @@ public class GameWorld extends BasicGameState {
     }
     
     public int getNextID() {
-        int nextID = 0;
+        int nextID = 1;
         while (nextID != -1) {
             if (entities.get(nextID) == null) return nextID;
             nextID++;
@@ -285,7 +306,7 @@ public class GameWorld extends BasicGameState {
             Creature player = new Creature(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this);
             player.angle = (float) (rand.nextFloat() * 2F * Math.PI);
             try {
-                toAdd.put(player);
+                process.put(player);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

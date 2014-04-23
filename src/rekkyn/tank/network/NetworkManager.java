@@ -1,7 +1,6 @@
 package rekkyn.tank.network;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.*;
 
 import org.jbox2d.common.Vec2;
 import org.newdawn.slick.Input;
@@ -76,9 +75,17 @@ public class NetworkManager {
         public float angle;
         public Vec2 velocity;
         public boolean removed;
-        public long ticksExisted;
         
         public Object[] specificData;
+        
+        @Override
+        public boolean equals(Object obj) {
+            EntityData other = (EntityData) obj;
+            
+            if (id == other.id && x == other.x && y == other.y && angle == other.angle && velocity == other.velocity
+                    && removed == other.removed && Arrays.equals(specificData, other.specificData)) return true;
+            return false;
+        }
     }
     
     public static class SendInput {

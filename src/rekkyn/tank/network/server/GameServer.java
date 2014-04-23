@@ -55,6 +55,8 @@ public class GameServer {
     public AddEntity addEntity(Entity e) {
         AddEntity addentity = new AddEntity();
         addentity.data = e.getData();
+        e.sentData = addentity.data;
+        
         return addentity;
     }
 }

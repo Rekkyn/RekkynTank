@@ -74,11 +74,10 @@ public class ServerListener extends Listener {
             c.sendTCP(lr);
             return;
         } else if (o instanceof SendInput) {
-            System.out.println("SEEEND IIINPUT");
             SendInput sendInput = (SendInput) o;
             sendInput.user = user;
             try {
-                world.inputs.put(sendInput);
+                world.process.put(sendInput);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

@@ -1,10 +1,9 @@
 package rekkyn.tank.network.client;
 
-import rekkyn.tank.*;
+import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.NetworkManager.AddEntity;
 import rekkyn.tank.network.NetworkManager.AddUser;
 import rekkyn.tank.network.NetworkManager.EntityData;
-import rekkyn.tank.network.NetworkManager.EntityType;
 import rekkyn.tank.network.NetworkManager.LoginResult;
 import rekkyn.tank.network.NetworkManager.RemoveUser;
 
@@ -41,20 +40,14 @@ public class ClientListener extends Listener {
             String name = ((RemoveUser) o).user.name;
             System.out.println("[CLIENT] " + name + " disconnected.");
         } else if (o instanceof AddEntity) {
-            EntityData data = ((AddEntity) o).data;
-            
-            Entity e = null;
-            
-            if (data.type == EntityType.CREATURE) {
-                e = new Creature(data.x, data.y, world);
-            } else if (data.type == EntityType.WALL) {
-                e = new Wall(data.x, data.y, world);
-            }
-            
-            e.setData(data);
-            
             try {
-                world.toAdd.put(e);
+                world.process.put(o);
+            } catch (InterruptedException e1) {
+                e1.printStackTrace();
+            }
+        } else if (o instanceof EntityData) {
+            try {
+                world.process.put(o);
             } catch (InterruptedException e1) {
                 e1.printStackTrace();
             }
