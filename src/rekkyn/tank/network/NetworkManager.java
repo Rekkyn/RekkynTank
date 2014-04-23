@@ -84,7 +84,8 @@ public class NetworkManager {
     public static class SendInput {
         public boolean[] mousePressed = new boolean[3];
         public Vec2 mousePos;
-        public boolean[] pressed = new boolean[1024];
+        public boolean[] pressed = new boolean[35];
+        public boolean[] down = new boolean[35];
         public User user;
     }
     

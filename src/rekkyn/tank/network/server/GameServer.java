@@ -12,11 +12,13 @@ import com.esotericsoftware.kryonet.Server;
 
 public class GameServer {
     public Server server;
-    
+    public User host;
     public static ServerListener listener;
     
     public GameServer(String name, GameWorld world) {
         world.server = this;
+        host = new User(name);
+        
         server = new Server() {
             @Override
             protected Connection newConnection() {
@@ -29,9 +31,8 @@ public class GameServer {
         listener = new ServerListener(server, this, world);
         server.addListener(listener);
         
-        User user = new User(name);
-        listener.loggedIn.add(user);
-        world.addPlayer(user);
+        listener.loggedIn.add(host);
+        world.addPlayer(host);
         
         try {
             server.bind(NetworkManager.port);

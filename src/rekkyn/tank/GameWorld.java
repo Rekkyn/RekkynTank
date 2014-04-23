@@ -14,6 +14,7 @@ import rekkyn.tank.network.NetworkManager.SendInput;
 import rekkyn.tank.network.User;
 import rekkyn.tank.network.client.GameClient;
 import rekkyn.tank.network.server.GameServer;
+import rekkyn.tank.skeleton.Motor;
 
 public class GameWorld extends BasicGameState {
     
@@ -78,25 +79,6 @@ public class GameWorld extends BasicGameState {
         }
         Camera.update();
         
-        /*Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
-        Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
-        float power = 50;
-        if (input.isKeyDown(Input.KEY_W)) {
-            ml.power = power;
-        } else if (input.isKeyDown(Input.KEY_S)) {
-            ml.power = -power;
-        } else {
-            ml.power = 0;
-        }
-        
-        if (input.isKeyDown(Input.KEY_R)) {
-            mr.power = power;
-        } else if (input.isKeyDown(Input.KEY_F)) {
-            mr.power = -power;
-        } else {
-            mr.power = 0;
-        }*/
-        
         // SERVER THINGS
         if (server != null) {
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
@@ -112,6 +94,27 @@ public class GameWorld extends BasicGameState {
             while ((e = toAdd.poll()) != null) {
                 add(e);
             }
+            
+            Creature player = players.get(server.host);
+            
+            Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
+            Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
+            float power = 50;
+            if (input.isKeyDown(Input.KEY_W)) {
+                ml.power = power;
+            } else if (input.isKeyDown(Input.KEY_S)) {
+                ml.power = -power;
+            } else {
+                ml.power = 0;
+            }
+            
+            if (input.isKeyDown(Input.KEY_R)) {
+                mr.power = power;
+            } else if (input.isKeyDown(Input.KEY_F)) {
+                mr.power = -power;
+            } else {
+                mr.power = 0;
+            }
         }
         
         // CLIENT THINGS
@@ -121,13 +124,19 @@ public class GameWorld extends BasicGameState {
                 add(e);
             }
             
+            int[] keys = new int[] { Input.KEY_W, Input.KEY_S, Input.KEY_R, Input.KEY_F };
+            
+            SendInput sendInput = new SendInput();
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                SendInput sendInput = new SendInput();
                 sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON] = true;
                 sendInput.mousePos = mousePos(container);
-                
-                client.client.sendTCP(sendInput);
             }
+            for (int key : keys) {
+                if (input.isKeyDown(key)) {
+                    sendInput.down[key] = true;
+                }
+            }
+            client.client.sendTCP(sendInput);
         }
         
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
@@ -148,12 +157,34 @@ public class GameWorld extends BasicGameState {
         sendData();
     }
     
-    
     private void processInput(SendInput sendInput, GameContainer container) {
         
         if (sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON]) {
             add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this));
         }
+        
+        User user = sendInput.user;
+        Creature player = players.get(user);
+        
+        Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
+        Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
+        float power = 50;
+        if (sendInput.down[Input.KEY_W]) {
+            ml.power = power;
+        } else if (sendInput.down[Input.KEY_S]) {
+            ml.power = -power;
+        } else {
+            ml.power = 0;
+        }
+        
+        if (sendInput.down[Input.KEY_R]) {
+            mr.power = power;
+        } else if (sendInput.down[Input.KEY_F]) {
+            mr.power = -power;
+        } else {
+            mr.power = 0;
+        }
+        
     }
     
     private void sendData() {
