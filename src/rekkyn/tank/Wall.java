@@ -9,8 +9,8 @@ public class Wall extends Entity {
     private float width;
     private float height;
     
-    public Wall(float x, float y, float width, float height) {
-        super(x, y);
+    public Wall(float x, float y, float width, float height, GameWorld world) {
+        super(x, y, world);
         this.width = width;
         this.height = height;
         
@@ -30,6 +30,11 @@ public class Wall extends Entity {
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
         g.fillRect(x - width / 2, -y - height / 2, width, height);
+    }
+    
+    @Override
+    public Object[] getData() {
+        return new Object[] { width, height };
     }
     
 }

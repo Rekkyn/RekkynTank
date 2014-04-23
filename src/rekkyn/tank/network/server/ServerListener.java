@@ -1,7 +1,9 @@
 package rekkyn.tank.network.server;
 
-import java.util.HashSet;
+import java.util.*;
 
+import rekkyn.tank.Entity;
+import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.NetworkManager.AddUser;
 import rekkyn.tank.network.NetworkManager.Login;
 import rekkyn.tank.network.NetworkManager.LoginResult;
@@ -13,11 +15,15 @@ import com.esotericsoftware.kryonet.*;
 public class ServerListener extends Listener {
     
     public Server server;
+    GameServer gameServer;
+    public GameWorld world;
     
     HashSet<User> loggedIn = new HashSet<User>();
     
-    public ServerListener(Server server) {
+    public ServerListener(Server server, GameServer gameServer, GameWorld world) {
         this.server = server;
+        this.gameServer = gameServer;
+        this.world = world;
     }
     
     @Override
@@ -43,7 +49,6 @@ public class ServerListener extends Listener {
                 return;
             }
             
-            // Reject if the name is invalid.
             String name = ((Login) o).name;
             
             // Reject if already logged in.
@@ -68,7 +73,7 @@ public class ServerListener extends Listener {
     private void loggedIn(UserConnection c, User user) {
         c.user = user;
         
-        // Add existing characters to new logged in connection.
+        // Add existing users to new logged in connection.
         for (User other : loggedIn) {
             AddUser addUser = new AddUser();
             addUser.user = other;
@@ -83,5 +88,13 @@ public class ServerListener extends Listener {
         server.sendToAllTCP(addUser);
         
         System.out.println("[SERVER] " + user.name + " logged in.");
+        
+        Iterator it = world.entities.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            
+            Entity e = (Entity) pairs.getValue();
+            c.sendTCP(gameServer.addEntity(e));
+        }
     }
 }

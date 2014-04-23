@@ -1,6 +1,7 @@
 package rekkyn.tank.network.client;
 
 import rekkyn.tank.Game;
+import rekkyn.tank.network.NetworkManager.AddEntity;
 import rekkyn.tank.network.NetworkManager.LoginResult;
 
 import com.esotericsoftware.kryonet.Connection;
@@ -29,6 +30,8 @@ public class ClientListener extends Listener {
             } else {
                 System.out.println("[CLIENT] Connection failed: " + lr.reason);
             }
+        } else if (o instanceof AddEntity) {
+            System.out.println("[CLIENT] Add entity yo.");
         }
     }
 }

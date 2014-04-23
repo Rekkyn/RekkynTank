@@ -1,5 +1,6 @@
 package rekkyn.tank.network.client;
 
+import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.NetworkManager;
 import rekkyn.tank.network.NetworkManager.Login;
 
@@ -10,7 +11,8 @@ public class GameClient {
     
     public static ClientListener listener;
     
-    public GameClient(String name) {
+    public GameClient(String name, GameWorld world) {
+        world.client = this;
         client = new Client();
         client.start();
         

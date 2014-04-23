@@ -9,21 +9,25 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.Colours.ColourSets;
-import rekkyn.tank.Skeleton.Motor;
+import rekkyn.tank.network.client.GameClient;
+import rekkyn.tank.network.server.GameServer;
 
 public class GameWorld extends BasicGameState {
     
     float accumulator = 0.0F;
-    public Creature player = new Creature(0, 0);
-    public static long tickCount = 0;
-    public static float partialTicks;
-    public static final float TIMESTEP = 50F / 3F;
+    public Creature player = new Creature(0, 0, this);
+    public long tickCount = 0;
+    public float partialTicks;
+    public final float TIMESTEP = 50F / 3F;
     
-    public static List<Entity> entities = new ArrayList<Entity>();
+    public HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     
-    public static Random rand = new Random();
+    public Random rand = new Random();
     
-    public static World physicsWorld = new World(new Vec2(0, 0));
+    public World physicsWorld = new World(new Vec2(0, 0));
+    
+    public GameServer server;
+    public GameClient client;
     
     public GameWorld() {
     }
@@ -67,7 +71,7 @@ public class GameWorld extends BasicGameState {
         }
         Camera.update();
         
-        Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
+        /*Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
         Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
         float power = 50;
         if (input.isKeyDown(Input.KEY_W)) {
@@ -84,35 +88,49 @@ public class GameWorld extends BasicGameState {
             mr.power = -power;
         } else {
             mr.power = 0;
-        }
+        }*/
         
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
         
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
+        Iterator it = entities.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry)it.next();
+            
+            Entity e = (Entity) pairs.getValue();
             
             e.update(container, game, delta);
             
             if (e.removed) {
                 physicsWorld.destroyBody(e.body);
-                entities.remove(i--);
+                entities.remove(pairs.getKey());
             }
+        }
+        sendData();
+    }
+    
+    
+    private void sendData() {
+        if (server != null) {
         }
     }
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         physicsWorld.setContinuousPhysics(true);
-        
-        add(player);
-        Creature c1 = new Creature(0, 5);
-        c1.angle = (float) Math.toRadians(45);
-        add(c1);
-        Creature c11 = new Creature(0, 20);
-        c11.angle = (float) Math.toRadians(-45);
-        add(c11);
-        
-        add(new Wall(0, -20, 50, 2));
+    }
+    
+    public void initServer() {
+        if (server != null) {
+            add(player);
+            Creature c1 = new Creature(0, 5, this);
+            c1.angle = (float) Math.toRadians(45);
+            add(c1);
+            Creature c11 = new Creature(0, 20, this);
+            c11.angle = (float) Math.toRadians(-45);
+            add(c11);
+            
+            add(new Wall(0, -20, 50, 2, this));
+        }
     }
     
     @Override
@@ -124,15 +142,21 @@ public class GameWorld extends BasicGameState {
         g.setColor(Colours.getBackground());
         g.fillRect(0, 0, Game.width, Game.height);
         
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
+        Iterator it = entities.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it.next();
+            
+            Entity e = (Entity) pairs.getValue();
             
             e.prerender(g);
             e.renderBackground(container, game, g);
             e.postrender(g);
         }
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
+        Iterator it2 = entities.entrySet().iterator();
+        while (it2.hasNext()) {
+            Map.Entry pairs = (Map.Entry) it2.next();
+            
+            Entity e = (Entity) pairs.getValue();
             
             e.prerender(g);
             e.render(container, game, g);
@@ -143,13 +167,28 @@ public class GameWorld extends BasicGameState {
         Font.draw("FPS: " + Game.appgc.getFPS(), 20, 10, 2, g);
     }
     
-    public static void add(Entity entity) {
+    public void add(Entity entity) {
         entity.removed = false;
-        entities.add(entity);
+        int id = getNextID();
+        entities.put(id, entity);
+        entity.id = id;
         entity.init();
+        
+        if (server != null) {
+            server.server.sendToAllTCP(server.addEntity(entity));
+        }
     }
     
-    public static List<Entity> getEntities() {
+    public int getNextID() {
+        int nextID = 0;
+        while (nextID != -1) {
+            if (entities.get(nextID) == null) return nextID;
+            nextID++;
+        }
+        return -1;
+    }
+    
+    public HashMap<Integer, Entity> getEntities() {
         return entities;
     }
     

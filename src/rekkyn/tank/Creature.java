@@ -5,16 +5,14 @@ import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
-import rekkyn.tank.Skeleton.Element;
-import rekkyn.tank.Skeleton.Heart;
-import rekkyn.tank.Skeleton.Segment;
+import rekkyn.tank.skeleton.*;
 
 public class Creature extends Entity {
     
     public Skeleton skeleton = new Skeleton(this);
     
-    public Creature(float x, float y) {
-        super(x, y);
+    public Creature(float x, float y, GameWorld world) {
+        super(x, y, world);
     }
     
     @Override
@@ -94,6 +92,11 @@ public class Creature extends Entity {
             g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
         }
         g.popTransform();
+    }
+    
+    @Override
+    public Object[] getData() {
+        return skeleton.getData();
     }
     
 }

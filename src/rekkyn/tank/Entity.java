@@ -5,10 +5,11 @@ import java.util.Random;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
 import org.newdawn.slick.*;
-import org.newdawn.slick.state.GameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public abstract class Entity {
+    
+    public int id;
     
     public float x, y;
     /** The angle of the entity in radians */
@@ -26,9 +27,10 @@ public abstract class Entity {
     public GameWorld world;
     public static World physicsWorld;
     
-    public Entity(float x, float y) {
+    public Entity(float x, float y, GameWorld world) {
         this.x = x;
         this.y = y;
+        this.world = world;
     }
     
     public void remove() {
@@ -36,21 +38,18 @@ public abstract class Entity {
     }
     
     public void init() {
-        physicsWorld = GameWorld.physicsWorld;
+        physicsWorld = world.physicsWorld;
         def = new BodyDef();
         def.position.set(x, y);
         def.angle = angle;
         def.type = BodyType.DYNAMIC;
-        body = GameWorld.physicsWorld.createBody(def);
+        body = world.physicsWorld.createBody(def);
         body.setLinearDamping(1F);
         body.setAngularDamping(1F);
     }
     
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
         ticksExisted++;
-        GameState state = game.getCurrentState();
-        if (!(state instanceof GameWorld)) return;
-        world = (GameWorld) game.getCurrentState();
         
         prevX = x;
         prevY = y;
@@ -63,7 +62,7 @@ public abstract class Entity {
     public void prerender(Graphics g) {
         g.pushTransform();
         g.scale(Camera.zoom, Camera.zoom);
-        g.translate(GameWorld.partialTicks * (x - prevX) - Camera.x + Game.width / Camera.zoom / 2, GameWorld.partialTicks * (prevY - y)
+        g.translate(world.partialTicks * (x - prevX) - Camera.x + Game.width / Camera.zoom / 2, world.partialTicks * (prevY - y)
                 + Camera.y + Game.height / Camera.zoom / 2);
         g.rotate(x, -y, (float) Math.toDegrees(-angle));
     }
@@ -77,6 +76,6 @@ public abstract class Entity {
         g.popTransform();
     }
     
-    public void onHit() {}
+    public abstract Object[] getData();
     
 }

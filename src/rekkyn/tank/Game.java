@@ -4,9 +4,6 @@ package rekkyn.tank;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
-import rekkyn.tank.network.client.GameClient;
-import rekkyn.tank.network.server.GameServer;
-
 public class Game extends StateBasedGame {
     
     static AppGameContainer appgc;
@@ -16,14 +13,13 @@ public class Game extends StateBasedGame {
     public static int width = 800;
     public static int height = 600;
     
+    public GameWorld world = new GameWorld();
+
     public Game(String name) {
         super(name);
     }
     
     public static void main(String[] args) {
-        
-        GameServer server = new GameServer();
-        GameClient client = new GameClient("Rekkyn");
         
         try {
             appgc = new AppGameContainer(new Game(NAME));
@@ -41,8 +37,8 @@ public class Game extends StateBasedGame {
     
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-        addState(new GameWorld());
         addState(new Menu());
+        addState(world);
     }
     
     public static Image scaleImage(Image image, int scale) {
