@@ -1,8 +1,10 @@
 package rekkyn.tank.network;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 import org.jbox2d.common.Vec2;
+import org.newdawn.slick.Input;
 
 import rekkyn.tank.Creature;
 import rekkyn.tank.skeleton.*;
@@ -36,6 +38,10 @@ public class NetworkManager {
         kryo.register(ElementType.class);
         kryo.register(EntityType.class);
         kryo.register(Vec2.class);
+        kryo.register(SendInput.class);
+        kryo.register(Input.class);
+        kryo.register(HashSet.class);
+        kryo.register(boolean[].class);
     }
     
     public static class Login {
@@ -68,6 +74,12 @@ public class NetworkManager {
         public long ticksExisted;
         
         public Object[] specificData;
+    }
+    
+    public static class SendInput {
+        public boolean[] mousePressed = new boolean[3];
+        public Vec2 mousePos;
+        public User user;
     }
     
     public enum EntityType {

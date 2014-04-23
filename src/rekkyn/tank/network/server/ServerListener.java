@@ -7,6 +7,7 @@ import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.NetworkManager.AddUser;
 import rekkyn.tank.network.NetworkManager.Login;
 import rekkyn.tank.network.NetworkManager.LoginResult;
+import rekkyn.tank.network.NetworkManager.SendInput;
 import rekkyn.tank.network.*;
 import rekkyn.tank.network.server.GameServer.UserConnection;
 
@@ -67,6 +68,14 @@ public class ServerListener extends Listener {
             loggedIn(connection, user);
             c.sendTCP(lr);
             return;
+        } else if (o instanceof SendInput) {
+            SendInput sendInput = (SendInput) o;
+            sendInput.user = user;
+            try {
+                world.inputs.put(sendInput);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
     

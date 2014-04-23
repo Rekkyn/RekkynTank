@@ -10,6 +10,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.Colours.ColourSets;
+import rekkyn.tank.network.NetworkManager.SendInput;
 import rekkyn.tank.network.client.GameClient;
 import rekkyn.tank.network.server.GameServer;
 
@@ -24,6 +25,7 @@ public class GameWorld extends BasicGameState {
     public HashMap<Integer, Entity> entities = new HashMap<Integer, Entity>();
     
     public LinkedBlockingQueue<Entity> toAdd = new LinkedBlockingQueue<Entity>();
+    public LinkedBlockingQueue<SendInput> inputs = new LinkedBlockingQueue<SendInput>();
     
     public Random rand = new Random();
     
@@ -98,6 +100,11 @@ public class GameWorld extends BasicGameState {
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                 add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
             }
+            
+            SendInput sendInput;
+            while ((sendInput = inputs.poll()) != null) {
+                processInput(sendInput, container);
+            }
         }
         
         // CLIENT THINGS
@@ -105,6 +112,14 @@ public class GameWorld extends BasicGameState {
             Entity e;
             while ((e = toAdd.poll()) != null) {
                 add(e);
+            }
+            
+            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                SendInput sendInput = new SendInput();
+                sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON] = true;
+                sendInput.mousePos = mousePos(container);
+                
+                client.client.sendTCP(sendInput);
             }
         }
         
@@ -126,6 +141,13 @@ public class GameWorld extends BasicGameState {
         sendData();
     }
     
+    
+    private void processInput(SendInput sendInput, GameContainer container) {
+        
+        if (sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON]) {
+            add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this));
+        }
+    }
     
     private void sendData() {
         if (server != null) {
