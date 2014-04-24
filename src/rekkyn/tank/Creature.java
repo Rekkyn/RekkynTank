@@ -22,12 +22,14 @@ public class Creature extends Entity {
     public void init() {
         super.init();
         
-        skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(2, 1);
+        skeleton.addSegment(0, 2).addSegment(1, 1);
         skeleton.getSegment(2, 0).addMotor(true);
-        skeleton.getSegment(2, 2).addElement(skeleton.new Mouth(), 0);
+        skeleton.getSegment(1, 1).addElement(skeleton.new Mouth(), 1).addElement(skeleton.new Mouth(), 7);
         
-        /*skeleton.addSegment(0, 2).addSegment(0, 1).addSegment(0, -1).addSegment(-1, -1).addSegment(1, -1).addSegment(1, 1);
-        skeleton.getSegment(2, 0).addMotor(true);*/
+        /*skeleton.addSegment(0, 2).addSegment(1, -1).addSegment(1, 1)
+        .addSegment(-1, 2);
+        skeleton.getSegment(2, 0).addMotor(true);
+        skeleton.getSegment(1, 1).addElement(skeleton.new Mouth(), 1).addElement(skeleton.new Mouth(), 7);*/
         
         for (Segment s : skeleton.segments) {
             PolygonShape shape = new PolygonShape();

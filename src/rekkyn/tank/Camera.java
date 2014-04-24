@@ -12,8 +12,8 @@ public class Camera {
     
     public static void update() {
         if (following != null) {
-            x = following.x;
-            y = following.y;
+            x = following.body.getWorldCenter().x;
+            y = following.body.getWorldCenter().y;
         }
     }
 }

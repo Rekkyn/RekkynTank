@@ -107,6 +107,7 @@ public class GameWorld extends BasicGameState {
         physicsWorld.setContinuousPhysics(true);
         
         add(player);
+        Camera.setFollowing(player);
         Creature c1 = new Creature(0, 5);
         c1.angle = (float) Math.toRadians(45);
         add(c1);
