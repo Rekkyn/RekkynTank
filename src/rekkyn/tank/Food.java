@@ -6,8 +6,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class Food extends Entity {
     
-    public Food(float x, float y) {
-        super(x, y);
+    public Food(float x, float y, GameWorld world) {
+        super(x, y, world);
     }
     
     @Override
@@ -27,4 +27,12 @@ public class Food extends Entity {
         g.setColor(Colours.getAccent());
         g.fillOval(x - 0.25F, -y - 0.25F, 0.5F, 0.5F);
     }
+    
+    @Override
+    public Object[] getSpecificData() {
+        return null;
+    }
+    
+    @Override
+    public void setSpecificData(Object[] data) {}
 }

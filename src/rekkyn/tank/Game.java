@@ -13,9 +13,10 @@ public class Game extends StateBasedGame {
     public static int width = 800;
     public static int height = 600;
     
+    public GameWorld world = new GameWorld();
+    
     public Game(String name) {
         super(name);
-        
     }
     
     public static void main(String[] args) {
@@ -26,6 +27,7 @@ public class Game extends StateBasedGame {
             // height = appgc.getScreenHeight();
             appgc.setDisplayMode(width, height, false);
             appgc.setShowFPS(false);
+            appgc.setAlwaysRender(true);
             appgc.start();
             
         } catch (SlickException e) {
@@ -36,8 +38,8 @@ public class Game extends StateBasedGame {
     
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-        addState(new GameWorld());
         addState(new Menu());
+        addState(world);
     }
     
     public static Image scaleImage(Image image, int scale) {

@@ -5,16 +5,14 @@ import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
-import rekkyn.tank.Skeleton.Element;
-import rekkyn.tank.Skeleton.Heart;
-import rekkyn.tank.Skeleton.Segment;
+import rekkyn.tank.skeleton.*;
 
 public class Creature extends Entity {
     
     public Skeleton skeleton = new Skeleton(this);
     
-    public Creature(float x, float y) {
-        super(x, y);
+    public Creature(float x, float y, GameWorld world) {
+        super(x, y, world);
     }
     
     @SuppressWarnings("deprecation")
@@ -22,9 +20,11 @@ public class Creature extends Entity {
     public void init() {
         super.init();
         
-        skeleton.addSegment(0, 2).addSegment(1, 1);
-        skeleton.getSegment(2, 0).addMotor(true);
-        skeleton.getSegment(1, 1).addElement(skeleton.new Mouth(), 1).addElement(skeleton.new Mouth(), 7);
+        if (skeleton.segments.size() <= 1) {
+            skeleton.addSegment(0, 2).addSegment(1, 1);
+            skeleton.getSegment(2, 0).addMotor(true);
+            skeleton.getSegment(1, 1).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
+        }
         
         /*skeleton.addSegment(0, 2).addSegment(1, -1).addSegment(1, 1)
         .addSegment(-1, 2);
@@ -97,6 +97,17 @@ public class Creature extends Entity {
             g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
         }
         g.popTransform();
+    }
+    
+    @Override
+    public Object[] getSpecificData() {
+        return new Object[] { skeleton };
+    }
+    
+    @Override
+    public void setSpecificData(Object[] data) {
+        skeleton = (Skeleton) data[0];
+        skeleton.creature = this;
     }
     
 }

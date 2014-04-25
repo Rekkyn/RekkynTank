@@ -6,16 +6,16 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class Wall extends Entity {
     
-    private float width;
-    private float height;
+    public float width;
+    public float height;
     
-    public Wall(float x, float y, float width, float height) {
-        super(x, y);
+    public Wall(float x, float y, float width, float height, GameWorld world) {
+        super(x, y, world);
         this.width = width;
         this.height = height;
         
     }
-    
+
     @Override
     public void init() {
         super.init();
@@ -29,10 +29,22 @@ public class Wall extends Entity {
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
+        g.setColor(Colours.getBody());
         g.fillRect(x - width / 2, -y - height / 2, width, height);
     }
     
     @Override
+    public Object[] getSpecificData() {
+        return new Object[] { width, height };
+    }
+    
+    @Override
+    public void setSpecificData(Object[] data) {
+        width = (Float) data[0];
+        height = (Float) data[1];
+    }
+
+        @Override
     public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.renderBackground(container, game, g);
         g.pushTransform();
@@ -42,5 +54,6 @@ public class Wall extends Entity {
         g.fillRect(x - width / 2, -y - height / 2, width, height);
         g.popTransform();
     }
+
     
 }

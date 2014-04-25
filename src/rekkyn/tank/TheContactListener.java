@@ -7,7 +7,7 @@ import org.jbox2d.collision.WorldManifold;
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.contacts.Contact;
 
-import rekkyn.tank.Skeleton.Segment;
+import rekkyn.tank.skeleton.Segment;
 
 public class TheContactListener implements ContactListener {
     
@@ -44,8 +44,8 @@ public class TheContactListener implements ContactListener {
         
         for (int i = 0; i < contact.getManifold().pointCount; i++) {
             Vec2 globalPos = new Vec2(manifold.points[i].x, manifold.points[i].y);
-            Vec2 relPos = globalPos.sub(new Vec2(s.creature.x, s.creature.y));
-            float rotateAngle = (float) (Math.PI / 4 - s.creature.angle);
+            Vec2 relPos = globalPos.sub(new Vec2(s.skeleton.creature.x, s.skeleton.creature.y));
+            float rotateAngle = (float) (Math.PI / 4 - s.skeleton.creature.angle);
             Vec2 rotated = new Vec2((float) (relPos.x * Math.cos(rotateAngle) - relPos.y * Math.sin(rotateAngle)), (float) (relPos.x
                     * Math.sin(rotateAngle) + relPos.y * Math.cos(rotateAngle)));
             Vec2 segmemtPos = rotated.sub(new Vec2(s.x, s.y));
