@@ -122,7 +122,7 @@ public class GameWorld extends BasicGameState {
             }
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
+                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this), true);
             }
         }
         
@@ -155,7 +155,7 @@ public class GameWorld extends BasicGameState {
             
             if (e.removed) {
                 physicsWorld.destroyBody(e.body);
-                entities.remove(pairs.getKey());
+                it.remove();
             }
         }
     }
@@ -173,22 +173,26 @@ public class GameWorld extends BasicGameState {
                 e = new Food(data.x, data.y, this);
             }
             
-            add(e);
+            e.init();
             e.setData(data);
+            add(e, false);
         } else if (o instanceof EntityData) {
             EntityData data = (EntityData) o;
-            entities.get(data.id).setData(data);
+            Entity e;
+            if ((e = entities.get(data.id)) != null) {
+                entities.get(data.id).setData(data);
+            }
         } else if (o instanceof SendInput) {
             processInput((SendInput) o, container);
         } else if (o instanceof Entity) {
-            add((Entity) o);
+            add((Entity) o, true);
         }
     }
     
     private void processInput(SendInput sendInput, GameContainer container) {
         
         if (sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON]) {
-            add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this));
+            add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this), true);
         }
         
         User user = sendInput.user;
@@ -225,10 +229,10 @@ public class GameWorld extends BasicGameState {
     public void initServer() {
         if (server != null) {
             for (int lol = 0; lol < 50; lol++) {
-                add(new Food(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this));
+                add(new Food(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this), true);
             }
             
-            add(new Wall(0, -20, 50, 2, this));
+            // add(new Wall(0, -20, 50, 2, this));
         }
     }
     
@@ -266,7 +270,7 @@ public class GameWorld extends BasicGameState {
         Font.draw("FPS: " + Game.appgc.getFPS(), 20, 10, 2, g);
     }
     
-    public void add(Entity entity) {
+    public void add(Entity entity, boolean init) {
         entity.removed = false;
         int id;
         if (entity.id == 0) {
@@ -275,8 +279,11 @@ public class GameWorld extends BasicGameState {
             id = entity.id;
         }
         entity.id = id;
-        entity.init();
+        if (init)
+            entity.init();
         entities.put(id, entity);
+        
+        System.out.println(entity + " " + id);
         
         if (server != null) {
             server.server.sendToAllTCP(server.addEntity(entity));

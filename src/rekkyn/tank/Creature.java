@@ -20,16 +20,20 @@ public class Creature extends Entity {
     public void init() {
         super.init();
         
-        if (skeleton.segments.size() <= 1) {
+        /*if (skeleton.segments.size() <= 1) {
             skeleton.addSegment(0, 2).addSegment(1, 1);
             skeleton.getSegment(2, 0).addMotor(true);
             skeleton.getSegment(1, 1).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
-        }
+        }*/
         
         /*skeleton.addSegment(0, 2).addSegment(1, -1).addSegment(1, 1)
         .addSegment(-1, 2);
         skeleton.getSegment(2, 0).addMotor(true);
-        skeleton.getSegment(1, 1).addElement(skeleton.new Mouth(), 1).addElement(skeleton.new Mouth(), 7);*/
+        skeleton.getSegment(1, 1).addElement(new Mouth(), 1).addElement(new Mouth(), 7);*/
+        
+        skeleton.addSegment(1, 1).addSegment(0, 2).addSegment(2, 1).addSegment(2, 2);
+        skeleton.getSegment(2, 0).addMotor(true);
+        skeleton.getSegment(2, 2).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
         
         for (Segment s : skeleton.segments) {
             PolygonShape shape = new PolygonShape();
