@@ -168,7 +168,7 @@ public class GameWorld extends BasicGameState {
             if (data.type == EntityType.CREATURE) {
                 e = new Creature(data.x, data.y, this);
             } else if (data.type == EntityType.WALL) {
-                e = new Wall(data.x, data.y, this);
+                e = new Wall(data.x, data.y, (Float) data.specificData[0], (Float) data.specificData[1], this);
             }
             
             add(e);

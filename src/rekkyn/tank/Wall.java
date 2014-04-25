@@ -6,8 +6,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class Wall extends Entity {
     
-    private float width;
-    private float height;
+    public float width;
+    public float height;
     
     public Wall(float x, float y, float width, float height, GameWorld world) {
         super(x, y, world);
@@ -15,11 +15,7 @@ public class Wall extends Entity {
         this.height = height;
         
     }
-    
-    public Wall(float x, float y, GameWorld world) {
-        super(x, y, world);
-    }
-    
+
     @Override
     public void init() {
         super.init();
