@@ -71,10 +71,9 @@ public class Segment {
     }
     
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        g.setColor(Color.yellow);
-        
         g.setColor(Color.cyan);
         if (!(elements[0] instanceof BlankElement)) {
+            g.setColor(elements[0].colour);
             Polygon p0 = new Polygon();
             p0.addPoint(0.5F, -0.5F);
             p0.addPoint(0.5F, 0);
@@ -83,6 +82,7 @@ public class Segment {
             g.fill(p0);
         }
         if (!(elements[1] instanceof BlankElement)) {
+            g.setColor(elements[1].colour);
             Polygon p1 = new Polygon();
             p1.addPoint(0.5F, 0.5F);
             p1.addPoint(0.5F, 0);
@@ -91,6 +91,7 @@ public class Segment {
             g.fill(p1);
         }
         if (!(elements[2] instanceof BlankElement)) {
+            g.setColor(elements[2].colour);
             Polygon p2 = new Polygon();
             p2.addPoint(0, 0.5F);
             p2.addPoint(0, 0.25F);
@@ -99,6 +100,7 @@ public class Segment {
             g.fill(p2);
         }
         if (!(elements[3] instanceof BlankElement)) {
+            g.setColor(elements[3].colour);
             Polygon p3 = new Polygon();
             p3.addPoint(0, 0.5F);
             p3.addPoint(0, 0.25F);
@@ -107,6 +109,7 @@ public class Segment {
             g.fill(p3);
         }
         if (!(elements[4] instanceof BlankElement)) {
+            g.setColor(elements[4].colour);
             Polygon p4 = new Polygon();
             p4.addPoint(-0.5F, 0.5F);
             p4.addPoint(-0.5F, 0);
@@ -115,6 +118,7 @@ public class Segment {
             g.fill(p4);
         }
         if (!(elements[5] instanceof BlankElement)) {
+            g.setColor(elements[5].colour);
             Polygon p5 = new Polygon();
             p5.addPoint(-0.5F, -0.5F);
             p5.addPoint(-0.5F, 0);
@@ -123,6 +127,7 @@ public class Segment {
             g.fill(p5);
         }
         if (!(elements[6] instanceof BlankElement)) {
+            g.setColor(elements[6].colour);
             Polygon p6 = new Polygon();
             p6.addPoint(0, -0.5F);
             p6.addPoint(0, -0.25F);
@@ -131,6 +136,7 @@ public class Segment {
             g.fill(p6);
         }
         if (!(elements[7] instanceof BlankElement)) {
+            g.setColor(elements[7].colour);
             Polygon p7 = new Polygon();
             p7.addPoint(0, -0.5F);
             p7.addPoint(0, -0.25F);
@@ -139,6 +145,7 @@ public class Segment {
             g.fill(p7);
         }
         if (!(elements[8] instanceof BlankElement)) {
+            g.setColor(elements[8].colour);
             g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
         }
     }

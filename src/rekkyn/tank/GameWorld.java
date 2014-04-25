@@ -283,8 +283,6 @@ public class GameWorld extends BasicGameState {
             entity.init();
         entities.put(id, entity);
         
-        System.out.println(entity + " " + id);
-        
         if (server != null) {
             server.server.sendToAllTCP(server.addEntity(entity));
         }

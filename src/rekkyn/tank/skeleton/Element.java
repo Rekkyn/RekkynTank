@@ -5,9 +5,13 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.skeleton.Skeleton.ElementType;
 
+import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
+
 public class Element {
     public ElementType type;
     public Segment segment;
+    
+    @Optional(value = "")
     public Color colour;
     
     public Element(Segment s) {
@@ -20,6 +24,5 @@ public class Element {
     
     public void contact(Object o) {}
     
-    @Deprecated
     public Element() {}
 }

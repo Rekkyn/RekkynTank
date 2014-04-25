@@ -13,6 +13,7 @@ public class Motor extends Element {
     public Motor(Segment s) {
         super(s);
         type = ElementType.CENTRE;
+        colour = Color.black;
     }
     
     @Override
@@ -35,5 +36,7 @@ public class Motor extends Element {
     }
     
     @Deprecated
-    public Motor() {}
+    public Motor() {
+        colour = Color.black;
+    }
 }

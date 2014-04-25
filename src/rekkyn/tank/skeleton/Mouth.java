@@ -1,17 +1,14 @@
 package rekkyn.tank.skeleton;
 
+import rekkyn.tank.Colours;
 import rekkyn.tank.Food;
 import rekkyn.tank.skeleton.Skeleton.ElementType;
 
 public class Mouth extends Element {
     
-    /** Only use this in the addElement method. */
-    @Deprecated
-    public Mouth() {}
-    
-    public Mouth(Segment s) {
-        super(s);
+    public Mouth() {
         type = ElementType.EDGE;
+        colour = Colours.getAccent();
     }
     
     @Override
