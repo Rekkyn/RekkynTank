@@ -51,7 +51,7 @@ public abstract class Entity {
         def.type = BodyType.DYNAMIC;
         body = world.physicsWorld.createBody(def);
         body.setLinearDamping(1.5F);
-        body.setAngularDamping(2F);
+        body.setAngularDamping(2.5F);
     }
     
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
@@ -92,6 +92,8 @@ public abstract class Entity {
             data.type = EntityType.WALL;
         } else if (this instanceof Food) {
             data.type = EntityType.FOOD;
+        } else if (this instanceof Particle) {
+            data.type = EntityType.PARTICLE;
         }
         
         data.id = id;

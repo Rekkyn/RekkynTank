@@ -101,7 +101,8 @@ public class NetworkManager {
     public enum EntityType {
         CREATURE,
         WALL,
-        FOOD;
+        FOOD,
+        PARTICLE;
     }
     
 }

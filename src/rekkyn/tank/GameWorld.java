@@ -39,6 +39,8 @@ public class GameWorld extends BasicGameState {
     public GameServer server;
     public GameClient client;
     
+    float power = 70;
+    
     public GameWorld() {
     }
     
@@ -93,10 +95,12 @@ public class GameWorld extends BasicGameState {
                 Map.Entry pairs = (Map.Entry) it.next();
                 Entity ent = (Entity) pairs.getValue();
                 
-                EntityData data = ent.getData();
-                if (!data.equals(ent.sentData)) {
-                    server.server.sendToAllTCP(data);
-                    ent.sentData = data;
+                if (!(ent instanceof Particle)) {
+                    EntityData data = ent.getData();
+                    if (!data.equals(ent.sentData)) {
+                        server.server.sendToAllTCP(data);
+                        ent.sentData = data;
+                    }
                 }
             }
             
@@ -104,7 +108,6 @@ public class GameWorld extends BasicGameState {
             
             Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
             Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
-            float power = 50;
             if (input.isKeyDown(Input.KEY_W)) {
                 ml.power = power;
             } else if (input.isKeyDown(Input.KEY_S)) {
@@ -171,6 +174,8 @@ public class GameWorld extends BasicGameState {
                 e = new Wall(data.x, data.y, (Float) data.specificData[0], (Float) data.specificData[1], this);
             } else if (data.type == EntityType.FOOD) {
                 e = new Food(data.x, data.y, this);
+            } else if (data.type == EntityType.PARTICLE) {
+                e = new Particle(data.x, data.y, this);
             }
             
             e.init();
@@ -185,7 +190,7 @@ public class GameWorld extends BasicGameState {
         } else if (o instanceof SendInput) {
             processInput((SendInput) o, container);
         } else if (o instanceof Entity) {
-            add((Entity) o, true);
+            add((Entity) o, false);
         }
     }
     
@@ -200,7 +205,6 @@ public class GameWorld extends BasicGameState {
         
         Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
         Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
-        float power = 50;
         if (sendInput.down[Input.KEY_W]) {
             ml.power = power;
         } else if (sendInput.down[Input.KEY_S]) {
@@ -283,7 +287,7 @@ public class GameWorld extends BasicGameState {
             entity.init();
         entities.put(id, entity);
         
-        if (server != null) {
+        if (server != null && !(entity instanceof Particle)) {
             server.server.sendToAllTCP(server.addEntity(entity));
         }
     }
@@ -316,6 +320,7 @@ public class GameWorld extends BasicGameState {
         if (server != null) {
             Creature player = new Creature(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this);
             player.angle = (float) (rand.nextFloat() * 2F * Math.PI);
+            player.init();
             try {
                 process.put(player);
             } catch (InterruptedException e) {

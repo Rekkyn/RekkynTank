@@ -4,6 +4,7 @@ import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.Particle;
 import rekkyn.tank.skeleton.Skeleton.ElementType;
 
 public class Motor extends Element {
@@ -18,10 +19,23 @@ public class Motor extends Element {
     
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-        segment.skeleton.creature.body.applyForce(
-                new Vec2((float) (Math.cos(segment.skeleton.creature.angle) * power),
-                        (float) (Math.sin(segment.skeleton.creature.angle) * power)), segment.skeleton.creature.body
-                        .getWorldPoint(segment.skeleton.creature.getPosOnBody(segment.x, segment.y)));
+        Vec2 force = new Vec2((float) (Math.cos(segment.skeleton.creature.angle) * power),
+                (float) (Math.sin(segment.skeleton.creature.angle) * power));
+        
+        Vec2 pos = segment.skeleton.creature.body.getWorldPoint(segment.skeleton.creature.getPosOnBody(segment.x, segment.y));
+        segment.skeleton.creature.body.applyForce(force, pos);
+        
+        if (power != 0 && segment.skeleton.creature.world.rand.nextInt(5) == 0) {
+            Particle p = new Particle(pos.x, pos.y, segment.skeleton.creature.world);
+            p.init();
+            try {
+                segment.skeleton.creature.world.process.put(p);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            p.body.setLinearVelocity(segment.skeleton.creature.velocity);
+            p.body.applyForceToCenter(force.mul(-0.1F));
+        }
     }
     
     @Override
