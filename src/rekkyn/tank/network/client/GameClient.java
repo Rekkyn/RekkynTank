@@ -13,7 +13,7 @@ public class GameClient {
     
     public GameClient(String name, GameWorld world) {
         world.client = this;
-        client = new Client();
+        client = new Client(8192, 64 * 1024);
         client.start();
         
         NetworkManager.register(client);

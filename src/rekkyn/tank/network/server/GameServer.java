@@ -19,7 +19,7 @@ public class GameServer {
         world.server = this;
         host = new User(name);
         
-        server = new Server() {
+        server = new Server(16384, 64 * 1024) {
             @Override
             protected Connection newConnection() {
                 return new UserConnection();
