@@ -42,12 +42,11 @@ public class Skeleton {
         return null;
     }
     
-    
     public static enum ElementType {
         EDGE,
         CENTRE
     }
-
+    
     @Deprecated
     public Skeleton() {}
 }

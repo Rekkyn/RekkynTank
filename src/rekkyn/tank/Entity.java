@@ -33,6 +33,8 @@ public abstract class Entity {
     
     public EntityData sentData;
     
+    public boolean init = false;
+    
     public Entity(float x, float y, GameWorld world) {
         this.x = x;
         this.y = y;
@@ -48,13 +50,16 @@ public abstract class Entity {
         def = new BodyDef();
         def.position.set(x, y);
         def.angle = angle;
+        def.linearVelocity = velocity;
         def.type = BodyType.DYNAMIC;
         body = world.physicsWorld.createBody(def);
         body.setLinearDamping(1.5F);
         body.setAngularDamping(2.5F);
+        
+        init = true;
     }
     
-    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+    public void update() {
         ticksExisted++;
         
         prevX = x;
@@ -68,15 +73,14 @@ public abstract class Entity {
     
     public void prerender(Graphics g) {
         g.pushTransform();
-        g.scale(Camera.zoom, Camera.zoom);
-        g.translate(world.partialTicks * (x - prevX) - Camera.x + Game.width / Camera.zoom / 2, world.partialTicks * (prevY - y)
-                + Camera.y + Game.height / Camera.zoom / 2);
+        g.scale(world.camera.zoom, world.camera.zoom);
+        g.translate(world.partialTicks * (x - prevX) - world.camera.x + Game.width / world.camera.zoom / 2, world.partialTicks
+                * (prevY - y) + world.camera.y + Game.height / world.camera.zoom / 2);
         g.rotate(x, -y, (float) Math.toDegrees(-angle));
         g.rotate(x, -y, world.partialTicks * (float) Math.toDegrees(-angle + prevAngle));
     }
     
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-    }
+    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
     
     public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
     

@@ -46,12 +46,12 @@ public class Creature extends Entity {
     }
     
     @Override
-    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-        super.update(container, game, delta);
+    public void update() {
+        super.update();
         for (Segment s : skeleton.segments) {
             for (Element e : s.elements) {
                 if (e != null) {
-                    e.update(container, game, delta);
+                    e.update(this);
                 }
             }
         }

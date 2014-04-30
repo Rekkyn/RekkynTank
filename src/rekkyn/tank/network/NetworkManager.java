@@ -67,7 +67,6 @@ public class NetworkManager {
         public EntityData data;
     }
     
-    
     public static class EntityData {
         public EntityType type;
         

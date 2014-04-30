@@ -25,7 +25,6 @@ public class TheContactListener implements ContactListener {
         WorldManifold worldManifold = new WorldManifold();
         contact.getWorldManifold(worldManifold);
         
-        
         Object bodyDataA = contact.getFixtureA().getUserData();
         Object bodyDataB = contact.getFixtureB().getUserData();
         
@@ -52,7 +51,7 @@ public class TheContactListener implements ContactListener {
             
             float angle = (float) Math.atan2(segmemtPos.y, segmemtPos.x);
             
-            s.elements[elementFromAngle(angle)].contact(o);
+            s.elements[elementFromAngle(angle)].contact(o, s.skeleton.creature.world);
         }
     }
     
@@ -70,4 +69,3 @@ public class TheContactListener implements ContactListener {
         return -1;
     }
 }
-

@@ -3,6 +3,8 @@ package rekkyn.tank.skeleton;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.Creature;
+import rekkyn.tank.GameWorld;
 import rekkyn.tank.skeleton.Skeleton.ElementType;
 
 import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
@@ -20,9 +22,9 @@ public class Element {
     
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
     
-    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {}
+    public void update(Creature c) {}
     
-    public void contact(Object o) {}
+    public void contact(Object o, GameWorld world) {}
     
     public Element() {}
 }

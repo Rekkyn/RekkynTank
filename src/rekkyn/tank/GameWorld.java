@@ -30,7 +30,7 @@ public class GameWorld extends BasicGameState {
     
     public HashMap<User, Creature> players = new HashMap<User, Creature>();
     
-    public LinkedBlockingQueue process = new LinkedBlockingQueue();
+    public LinkedBlockingQueue<Object> process = new LinkedBlockingQueue<Object>();
     
     public Random rand = new Random();
     
@@ -39,10 +39,11 @@ public class GameWorld extends BasicGameState {
     public GameServer server;
     public GameClient client;
     
+    Camera camera = new Camera();
+    
     float power = 70;
     
-    public GameWorld() {
-    }
+    public GameWorld() {}
     
     @Override
     public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
@@ -64,24 +65,24 @@ public class GameWorld extends BasicGameState {
         tickCount++;
         
         if (input.isKeyDown(Input.KEY_RIGHT)) {
-            Camera.x += 4 / Camera.zoom;
+            camera.x += 4 / camera.zoom;
         }
         if (input.isKeyDown(Input.KEY_LEFT)) {
-            Camera.x -= 4 / Camera.zoom;
+            camera.x -= 4 / camera.zoom;
         }
         if (input.isKeyDown(Input.KEY_UP)) {
-            Camera.y += 4 / Camera.zoom;
+            camera.y += 4 / camera.zoom;
         }
         if (input.isKeyDown(Input.KEY_DOWN)) {
-            Camera.y -= 4 / Camera.zoom;
+            camera.y -= 4 / camera.zoom;
         }
         if (input.isKeyDown(Input.KEY_EQUALS)) {
-            Camera.zoom *= 1.01;
+            camera.zoom *= 1.01;
         }
         if (input.isKeyDown(Input.KEY_MINUS)) {
-            Camera.zoom *= 0.99;
+            camera.zoom *= 0.99;
         }
-        Camera.update();
+        camera.update();
         
         Object o;
         while ((o = process.poll()) != null) {
@@ -125,7 +126,7 @@ public class GameWorld extends BasicGameState {
             }
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this), true);
+                add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
             }
         }
         
@@ -150,11 +151,11 @@ public class GameWorld extends BasicGameState {
         
         Iterator it = entities.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pairs = (Map.Entry)it.next();
+            Map.Entry pairs = (Map.Entry) it.next();
             
             Entity e = (Entity) pairs.getValue();
             
-            e.update(container, game, delta);
+            e.update();
             
             if (e.removed) {
                 physicsWorld.destroyBody(e.body);
@@ -174,30 +175,27 @@ public class GameWorld extends BasicGameState {
                 e = new Wall(data.x, data.y, (Float) data.specificData[0], (Float) data.specificData[1], this);
             } else if (data.type == EntityType.FOOD) {
                 e = new Food(data.x, data.y, this);
-            } else if (data.type == EntityType.PARTICLE) {
-                e = new Particle(data.x, data.y, this);
             }
             
             e.init();
             e.setData(data);
-            add(e, false);
+            add(e);
         } else if (o instanceof EntityData) {
             EntityData data = (EntityData) o;
-            Entity e;
-            if ((e = entities.get(data.id)) != null) {
+            if (entities.get(data.id) != null) {
                 entities.get(data.id).setData(data);
             }
         } else if (o instanceof SendInput) {
             processInput((SendInput) o, container);
         } else if (o instanceof Entity) {
-            add((Entity) o, false);
+            add((Entity) o);
         }
     }
     
     private void processInput(SendInput sendInput, GameContainer container) {
         
         if (sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON]) {
-            add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this), true);
+            add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this));
         }
         
         User user = sendInput.user;
@@ -233,7 +231,7 @@ public class GameWorld extends BasicGameState {
     public void initServer() {
         if (server != null) {
             for (int lol = 0; lol < 50; lol++) {
-                add(new Food(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this), true);
+                add(new Food(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this));
             }
             
             // add(new Wall(0, -20, 50, 2, this));
@@ -274,7 +272,7 @@ public class GameWorld extends BasicGameState {
         Font.draw("FPS: " + Game.appgc.getFPS(), 20, 10, 2, g);
     }
     
-    public void add(Entity entity, boolean init) {
+    public void add(Entity entity) {
         entity.removed = false;
         int id;
         if (entity.id == 0) {
@@ -283,8 +281,7 @@ public class GameWorld extends BasicGameState {
             id = entity.id;
         }
         entity.id = id;
-        if (init)
-            entity.init();
+        if (!entity.init) entity.init();
         entities.put(id, entity);
         
         if (server != null && !(entity instanceof Particle)) {
@@ -305,10 +302,10 @@ public class GameWorld extends BasicGameState {
         return entities;
     }
     
-    public static Vec2 mousePos(GameContainer container) {
+    public Vec2 mousePos(GameContainer container) {
         Input input = container.getInput();
-        return new Vec2(Camera.x - Game.width / 2 / Camera.zoom + input.getMouseX() / Camera.zoom, Camera.y + Game.height / 2 / Camera.zoom
-                - input.getMouseY() / Camera.zoom);
+        return new Vec2(camera.x - Game.width / 2 / camera.zoom + input.getMouseX() / camera.zoom, camera.y + Game.height / 2 / camera.zoom
+                - input.getMouseY() / camera.zoom);
     }
     
     @Override
@@ -328,6 +325,16 @@ public class GameWorld extends BasicGameState {
             }
             players.put(user, player);
         }
+    }
+    
+    public Particle spawnParticle(float x, float y, Color colour, int age, float radius) {
+        Particle p = new Particle(x, y, colour, age, radius, this);
+        try {
+            process.put(p);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        return p;
     }
     
 }

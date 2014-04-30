@@ -32,16 +32,7 @@ public class Segment {
             return this;
         }
         
-        if (location == 0) {
-            if (!(elements[0] instanceof BlankElement) || !(elements[7] instanceof BlankElement)) {
-                System.err.println("Tried to put an element in a taken spot;");
-                return this;
-            }
-            
-            elements[0] = elements[7] = e;
-            return this;
-            
-        } else if (location == 8) {
+        if (location == 8) {
             if (!(elements[8] instanceof BlankElement)) {
                 System.err.println("Tried to put an element in a taken spot;");
                 return this;
@@ -51,12 +42,29 @@ public class Segment {
             return this;
             
         } else {
-            if (!(elements[location] instanceof BlankElement) || !(elements[location - 1] instanceof BlankElement)) {
+            int left = location - 1;
+            while (left < 0)
+                left += 8;
+            int leftTwo = location - 2;
+            while (leftTwo < 0)
+                leftTwo += 8;
+            int right = location + 1;
+            while (right > 7)
+                right -= 8;
+            
+            if (!(elements[location] instanceof BlankElement) || !(elements[left] instanceof BlankElement)) {
                 System.err.println("Tried to put an element in a taken spot;");
                 return this;
             }
             
-            elements[location] = elements[location - 1] = e;
+            if (elements[right].getClass().equals(e.getClass())) {
+                e = elements[right];
+            }
+            if (elements[leftTwo].getClass().equals(e.getClass())) {
+                e = elements[leftTwo];
+            }
+            
+            elements[location] = elements[left] = e;
         }
         return this;
     }

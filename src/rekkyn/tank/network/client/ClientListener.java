@@ -33,7 +33,7 @@ public class ClientListener extends Listener {
             } else {
                 System.out.println("[CLIENT] Connection failed: " + lr.reason);
             }
-        } else if(o instanceof AddUser) {
+        } else if (o instanceof AddUser) {
             String name = ((AddUser) o).user.name;
             System.out.println("[CLIENT] " + name + " logged in.");
         } else if (o instanceof RemoveUser) {

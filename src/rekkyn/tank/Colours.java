@@ -11,19 +11,19 @@ public class Colours {
     }
     
     public static Color getBody() {
-        return current.body;
+        return new Color(current.body.r, current.body.g, current.body.b);
     }
     
     public static Color getAccent() {
-        return current.accent;
+        return new Color(current.accent.r, current.accent.g, current.accent.b);
     }
     
     public static Color getBackground() {
-        return current.background;
+        return new Color(current.background.r, current.background.g, current.background.b);
     }
     
     public static Color getShadow() {
-        return current.shadow;
+        return new Color(current.shadow.r, current.shadow.g, current.shadow.b, current.shadow.a);
     }
     
     public static Color getDark() {
@@ -49,4 +49,3 @@ public class Colours {
         }
     }
 }
-

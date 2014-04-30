@@ -13,12 +13,10 @@ public class Menu extends BasicGameState {
     
     Scanner s = new Scanner(System.in);
     
-    public Menu() throws SlickException {
-    }
+    public Menu() throws SlickException {}
     
     @Override
-    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-    }
+    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {}
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -36,8 +34,7 @@ public class Menu extends BasicGameState {
     }
     
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-    }
+    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
     
     @Override
     public int getID() {

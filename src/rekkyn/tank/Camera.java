@@ -1,16 +1,16 @@
 package rekkyn.tank;
 
 public class Camera {
-    public static float zoom = 20;
-    public static float x = 0;
-    public static float y = 0;
-    public static Entity following;
+    public float zoom = 20;
+    public float x = 0;
+    public float y = 0;
+    public Entity following;
     
-    public static void setFollowing(Entity e) {
+    public void setFollowing(Entity e) {
         following = e;
     }
     
-    public static void update() {
+    public void update() {
         if (following != null) {
             x = following.body.getWorldCenter().x;
             y = following.body.getWorldCenter().y;

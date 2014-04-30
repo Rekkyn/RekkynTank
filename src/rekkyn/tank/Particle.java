@@ -11,12 +11,15 @@ public class Particle extends Entity {
     
     public Color colour;
     public float alpha = 0.25F;
-    public int ageDecay = 30;
+    public int ageDecay;
+    public float radius;
     
-    public Particle(float x, float y, GameWorld world) {
+    public Particle(float x, float y, Color colour, int age, float radius, GameWorld world) {
         super(x, y, world);
-        colour = Colours.getDark();
+        this.colour = colour;
         colour.a = alpha;
+        ageDecay = age;
+        this.radius = radius;
     }
     
     @Override
@@ -24,7 +27,7 @@ public class Particle extends Entity {
         super.init();
         
         CircleShape shape = new CircleShape();
-        shape.setRadius(0.125F);
+        shape.setRadius(radius);
         FixtureDef def = new FixtureDef();
         def.shape = shape;
         def.density = 0.5F;
@@ -33,8 +36,8 @@ public class Particle extends Entity {
     }
     
     @Override
-    public void update(GameContainer container, StateBasedGame game, int delta) throws SlickException {
-        super.update(container, game, delta);
+    public void update() {
+        super.update();
         age++;
         if (age > ageDecay) remove();
         
@@ -45,7 +48,7 @@ public class Particle extends Entity {
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
         g.setColor(colour);
-        g.fillOval(x - 0.125F, -y - 0.125F, 0.25F, 0.25F);
+        g.fillOval(x - radius, -y - radius, 2 * radius, 2 * radius);
     }
     
     @Override
