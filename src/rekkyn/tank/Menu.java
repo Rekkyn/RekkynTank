@@ -21,6 +21,10 @@ public class Menu extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         int i = s.nextInt();
+        if (i == 3) {
+            game.enterState(Game.EDITOR);
+            return;
+        }
         if (i == 0) {
             System.out.println("Please enter your username:");
             String name = s.next();

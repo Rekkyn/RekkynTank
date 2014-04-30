@@ -31,6 +31,12 @@ public class Skeleton {
         return this;
     }
     
+    public void removeSegment(int x, int y) {
+        segments.remove(getSegment(x, y));
+        if (x != y) segments.remove(getSegment(y, x));
+        
+    }
+    
     public Segment getSegment(int x, int y) {
         
         for (Segment s : segments) {

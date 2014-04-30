@@ -58,10 +58,7 @@ public class Creature extends Entity {
     }
     
     public Vec2 getPosOnBody(int x, int y) {
-        float rotX = (float) (x * Math.cos(-Math.PI / 4) - y * Math.sin(-Math.PI / 4));
-        float rotY = (float) (x * Math.sin(-Math.PI / 4) + y * Math.cos(-Math.PI / 4));
-        
-        return new Vec2(rotX, rotY);
+        return Util.rotateVec(new Vec2(x, y), (float) (-Math.PI / 4));
     }
     
     @Override
