@@ -31,12 +31,23 @@ public class Skeleton {
         return this;
     }
     
+    public Skeleton addSegment(Segment s) {
+        for (Segment other : segments) {
+            if (other.x == s.x && other.y == s.y) return this;
+        }
+        segments.add(s);
+        return this;
+    }
+    
     public void removeSegment(int x, int y) {
         segments.remove(getSegment(x, y));
         if (x != y) segments.remove(getSegment(y, x));
-        
     }
     
+    public void removeSegment(Segment s) {
+        segments.remove(getSegment(s.x, s.y));
+    }
+
     public Segment getSegment(int x, int y) {
         
         for (Segment s : segments) {

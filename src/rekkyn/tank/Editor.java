@@ -1,5 +1,8 @@
 package rekkyn.tank;
 
+import java.util.*;
+import java.util.Map.Entry;
+
 import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.BasicGameState;
@@ -16,6 +19,9 @@ public class Editor extends BasicGameState {
     
     public Skeleton skeleton = new Skeleton(null);
     Camera camera = new Camera();
+    
+    HashMap<Segment, Object[]> cooldowns = new HashMap<Segment, Object[]>();
+    int cooldown = 20;
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
@@ -60,6 +66,26 @@ public class Editor extends BasicGameState {
         }
         camera.update();
         
+        Iterator<Entry<Segment, Object[]>> it = cooldowns.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pairs = it.next();
+            Integer cool = (Integer) ((Object[]) pairs.getValue())[0];
+            Boolean added = (Boolean) ((Object[]) pairs.getValue())[1];
+            if (added) {
+                if (cool > 0) {
+                    cooldowns.put((Segment) pairs.getKey(), new Object[] { cool - 1, added });
+                } else {
+                    skeleton.addSegment((Segment) pairs.getKey());
+                    it.remove();
+                }
+            } else {
+                if (cool < cooldown) {
+                    cooldowns.put((Segment) pairs.getKey(), new Object[] { cool + 1, added });
+                } else {
+                    it.remove();
+                }
+            }
+        }
     }
     
     @Override
@@ -98,12 +124,16 @@ public class Editor extends BasicGameState {
         float dist = (float) (1 / Math.sqrt(8));
         g.translate(0, dist);
         
+        // shadows
         for (Segment s : skeleton.segments) {
             g.setColor(Colours.getShadow());
             g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, 1);
         }
+        
+        drawCompletingSegments(g);
         g.popTransform();
         
+        // body
         for (Segment s : skeleton.segments) {
             if (s instanceof Heart) {
                 g.setColor(Colours.getAccent());
@@ -122,11 +152,12 @@ public class Editor extends BasicGameState {
         int mouseY = Math.round(mouse.y);
         boolean[] neighbours = getNeighbours(mouseX, mouseY);
         
-        boolean drawNeighbour = true;
+        boolean emptySpot = true;
         
+        // draw outline
         for (Segment s : skeleton.segments) {
             if (s.x == mouseX && s.y == mouseY) {
-                drawNeighbour = false;
+                emptySpot = false;
                 g.setColor(Colours.getAccent());
                 g.setLineWidth(2);
                 g.drawRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
@@ -134,13 +165,15 @@ public class Editor extends BasicGameState {
             }
         }
         
-        if (!drawNeighbour) {
-            if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-                skeleton.removeSegment(mouseX, mouseY);
-            }
+        // remove segment
+        if (!emptySpot && input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart)) {
+            cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { 0, false });
+            if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { 0, false });
+            skeleton.removeSegment(mouseX, mouseY);
         }
         
-        if (drawNeighbour
+        // draw posible segment
+        if (emptySpot
                 && (neighbours[0] || neighbours[1] || neighbours[2] || neighbours[3] || neighbours[4] || neighbours[5] || neighbours[6] || neighbours[7])) {
             Color col = Colours.getBody();
             col.a = 0.5F;
@@ -150,10 +183,56 @@ public class Editor extends BasicGameState {
                 g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                skeleton.addSegment(mouseX, mouseY);
+                cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { cooldown, true });
+                if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { cooldown, true });
             }
         }
+        
+        // draw half completed segments
+        g.setColor(Colours.getBody());
+        drawCompletingSegments(g);
+        
         g.popTransform();
+    }
+    
+    public void drawCompletingSegments(Graphics g) {
+        Iterator<Entry<Segment, Object[]>> it1 = cooldowns.entrySet().iterator();
+        while (it1.hasNext()) {
+            Map.Entry pairs = it1.next();
+            Segment s = (Segment) pairs.getKey();
+            Integer cool = (Integer) ((Object[]) pairs.getValue())[0];
+            boolean[] bool = getNeighbours(s.x, s.y);
+            if (bool[1]) {
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
+            }
+            if (bool[3]) {
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, (float) -cool / cooldown + 1);
+            }
+            if (bool[5]) {
+                g.fillRect(s.x + (float) cool / cooldown - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
+            }
+            if (bool[7]) {
+                g.fillRect(s.x - 0.5F, -s.y + (float) cool / cooldown - 0.5F, 1, (float) -cool / cooldown + 1);
+            }
+            
+            if (bool[0] && !bool[1] && !bool[7]) {
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
+                g.fillRect(s.x - 0.5F, -s.y + (float) cool / cooldown - 0.5F, 1, (float) -cool / cooldown + 1);
+                
+            }
+            if (bool[2] && !bool[3] && !bool[1]) {
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, (float) -cool / cooldown + 1);
+            }
+            if (bool[4] && !bool[5] && !bool[3]) {
+                g.fillRect(s.x + (float) cool / cooldown - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, (float) -cool / cooldown + 1);
+            }
+            if (bool[6] && !bool[7] && !bool[5]) {
+                g.fillRect(s.x + (float) cool / cooldown - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
+                g.fillRect(s.x - 0.5F, -s.y + (float) cool / cooldown - 0.5F, 1, (float) -cool / cooldown + 1);
+            }
+        }
     }
     
     public Vec2 mousePos(GameContainer container) {
