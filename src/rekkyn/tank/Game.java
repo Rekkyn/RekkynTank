@@ -10,6 +10,7 @@ public class Game extends StateBasedGame {
     public static final int WORLD = 0;
     public static final int MENU = 1;
     public static final int EDITOR = 2;
+    public static final int TESTWORLD = 3;
     public static int width = 800;
     public static int height = 600;
     
@@ -41,6 +42,7 @@ public class Game extends StateBasedGame {
         addState(new Menu());
         addState(world);
         addState(new Editor());
+        addState(new TestWorld());
     }
     
     public static Image scaleImage(Image image, int scale) {

@@ -11,10 +11,17 @@ public class Motor extends Element {
     
     public float power = 0;
     
+    public Motor() {
+        type = ElementType.CENTRE;
+        colour = new Color(0, 0, 0);
+        colour.a = 0.75F;
+    }
+    
     public Motor(Segment s) {
         super(s);
         type = ElementType.CENTRE;
-        colour = Color.black;
+        colour = new Color(0, 0, 0);
+        colour.a = 0.75F;
     }
     
     @Override
@@ -34,7 +41,7 @@ public class Motor extends Element {
     
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        g.setColor(Color.black);
+        g.setColor(colour);
         g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
     }
     
@@ -43,8 +50,4 @@ public class Motor extends Element {
         return "motor";
     }
     
-    @Deprecated
-    public Motor() {
-        colour = Color.black;
-    }
 }

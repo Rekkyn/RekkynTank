@@ -23,6 +23,8 @@ public class Editor extends BasicGameState {
     HashMap<Segment, Object[]> cooldowns = new HashMap<Segment, Object[]>();
     int cooldown = 20;
     
+    public int selected = 1;
+    
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         skeleton.addSegment(1, 1).addSegment(3, -2).addSegment(2, -2);
@@ -65,6 +67,19 @@ public class Editor extends BasicGameState {
             camera.zoom *= 0.99;
         }
         camera.update();
+        
+        if (input.isKeyPressed(Input.KEY_T)) {
+            TestWorld testWorld = (TestWorld) game.getState(Game.TESTWORLD);
+            testWorld.addTestCreatrue(skeleton);
+            game.enterState(Game.TESTWORLD);
+        }
+        
+        if (input.isKeyPressed(Input.KEY_1)) {
+            selected = 1;
+        }
+        if (input.isKeyPressed(Input.KEY_2)) {
+            selected = 2;
+        }
         
         Iterator<Entry<Segment, Object[]>> it = cooldowns.entrySet().iterator();
         while (it.hasNext()) {
@@ -147,50 +162,95 @@ public class Editor extends BasicGameState {
             g.popTransform();
         }
         
+        // draw half completed segments
+        g.setColor(Colours.getBody());
+        drawCompletingSegments(g);
+        
+        
+        
+        
+        // not rendering stuff
         Vec2 mouse = Util.rotateVec(mousePos(container), (float) (-Math.PI / 4));
         int mouseX = Math.round(mouse.x);
         int mouseY = Math.round(mouse.y);
         boolean[] neighbours = getNeighbours(mouseX, mouseY);
         
-        boolean emptySpot = true;
-        
-        // draw outline
+        boolean overSegment = false;
         for (Segment s : skeleton.segments) {
             if (s.x == mouseX && s.y == mouseY) {
-                emptySpot = false;
+                overSegment = true;
+            }
+        }
+        
+        if (selected == 1) {
+            // draw outline
+            if (overSegment) {
                 g.setColor(Colours.getAccent());
                 g.setLineWidth(2);
                 g.drawRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
                 if (mouseX != mouseY) g.drawRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
             }
-        }
-        
-        // remove segment
-        if (!emptySpot && input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart)) {
-            cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { 0, false });
-            if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { 0, false });
-            skeleton.removeSegment(mouseX, mouseY);
-        }
-        
-        // draw posible segment
-        if (emptySpot
-                && (neighbours[0] || neighbours[1] || neighbours[2] || neighbours[3] || neighbours[4] || neighbours[5] || neighbours[6] || neighbours[7])) {
-            Color col = Colours.getBody();
-            col.a = 0.5F;
-            g.setColor(col);
-            g.fillRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
-            if (mouseX != mouseY)
-                g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
             
-            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { cooldown, true });
-                if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { cooldown, true });
+            // remove segment
+            if (overSegment && input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart)) {
+                cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { 0, false });
+                if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { 0, false });
+                skeleton.removeSegment(mouseX, mouseY);
+            }
+            
+            // draw posible segment
+            if (!overSegment
+                    && (neighbours[0] || neighbours[1] || neighbours[2] || neighbours[3] || neighbours[4] || neighbours[5] || neighbours[6] || neighbours[7])) {
+                Color col = Colours.getBody();
+                col.a = 0.5F;
+                g.setColor(col);
+                g.fillRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
+                if (mouseX != mouseY)
+                    g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
+                
+                if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                    cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { cooldown, true });
+                    if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { cooldown, true });
+                }
+            }
+        } else if (selected == 2) {
+            Motor motor = new Motor();
+            if (overSegment && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart)) {
+                if (skeleton.getSegment(mouseX, mouseY).elements[8] instanceof BlankElement) {
+                    g.pushTransform();
+                    g.translate(mouseX, -mouseY);
+                    motor.render(container, game, g);
+                    g.popTransform();
+                    
+                    if (mouseX != mouseY) {
+                        g.pushTransform();
+                        g.translate(mouseY, -mouseX);
+                        motor.render(container, game, g);
+                        g.popTransform();
+                    }
+                    
+                    if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                        skeleton.getSegment(mouseX, mouseY).addElement(motor, 8);
+                        if (mouseX != mouseY) skeleton.getSegment(mouseY, mouseX).addElement(new Motor(), 8);
+                    }
+                } else {
+                    g.setColor(Colours.getAccent());
+                    g.setLineWidth(2);
+                    g.drawRect(mouseX - 0.25F, -mouseY - 0.25F, 0.5F, 0.5F);
+                    if (mouseX != mouseY) g.drawRect(mouseY - 0.25F, -mouseX - 0.25F, 0.5F, 0.5F);
+                    if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+                        skeleton.getSegment(mouseX, mouseY).removeElement(8);
+                        if (mouseX != mouseY) skeleton.getSegment(mouseY, mouseX).removeElement(8);
+                    }
+                }
+            } else {
+                g.pushTransform();
+                g.translate(mouse.x, -mouse.y);
+                motor.render(container, game, g);
+                g.popTransform();
             }
         }
         
-        // draw half completed segments
-        g.setColor(Colours.getBody());
-        drawCompletingSegments(g);
         
         g.popTransform();
     }

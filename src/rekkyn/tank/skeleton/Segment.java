@@ -22,6 +22,8 @@ public class Segment {
     }
     
     public Segment addElement(Element e, int location) {
+        e.segment = this;
+        
         if (this instanceof Heart) {
             System.err.println("You can't add elements to hearts.");
             return this;
@@ -66,6 +68,11 @@ public class Segment {
             
             elements[location] = elements[left] = e;
         }
+        return this;
+    }
+    
+    public Segment removeElement(int location) {
+        elements[location] = new BlankElement();
         return this;
     }
     

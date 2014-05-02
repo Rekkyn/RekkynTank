@@ -11,30 +11,20 @@ public class Creature extends Entity {
     
     public Skeleton skeleton = new Skeleton(this);
     
-    public Creature(float x, float y, GameWorld world) {
+    public Creature(float x, float y, GameWorld world, Skeleton skeleton) {
         super(x, y, world);
+        this.skeleton = skeleton;
+        skeleton.creature = this;
+    }
+    
+    public Creature(float x, float y, GameWorld world) {
+        this(x, y, world, null);
     }
     
     @SuppressWarnings("deprecation")
     @Override
     public void init() {
         super.init();
-        
-        /*if (skeleton.segments.size() <= 1) {
-            skeleton.addSegment(0, 2).addSegment(1, 1);
-            skeleton.getSegment(2, 0).addMotor(true);
-            skeleton.getSegment(1, 1).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
-        }*/
-        
-        /*skeleton.addSegment(0, 2).addSegment(1, -1).addSegment(1, 1)
-        .addSegment(-1, 2);
-        skeleton.getSegment(2, 0).addMotor(true);
-        skeleton.getSegment(1, 1).addElement(new Mouth(), 1).addElement(new Mouth(), 7);*/
-        
-        skeleton.addSegment(1, 1).addSegment(0, 2).addSegment(2, 1).addSegment(2, 2);
-        skeleton.getSegment(2, 0).addMotor(true);
-        skeleton.getSegment(2, 2).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
-        
         for (Segment s : skeleton.segments) {
             PolygonShape shape = new PolygonShape();
             shape.setAsBox(0.5F, 0.5F, getPosOnBody(s.x, s.y), (float) Math.toRadians(45));
