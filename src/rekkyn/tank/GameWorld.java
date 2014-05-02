@@ -164,7 +164,7 @@ public class GameWorld extends BasicGameState {
         }
     }
     
-    private void process(Object o, GameContainer container) {
+    protected void process(Object o, GameContainer container) {
         if (o instanceof AddEntity) {
             EntityData data = ((AddEntity) o).data;
             

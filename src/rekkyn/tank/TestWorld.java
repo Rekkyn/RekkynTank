@@ -43,6 +43,11 @@ public class TestWorld extends GameWorld {
         }
         camera.update();
         
+        Object o;
+        while ((o = process.poll()) != null) {
+            process(o, container);
+        }
+
         if (input.isKeyPressed(Input.KEY_T)) {
             
             Iterator it = entities.entrySet().iterator();
@@ -50,7 +55,7 @@ public class TestWorld extends GameWorld {
                 Map.Entry pairs = (Map.Entry) it.next();
                 ((Entity) pairs.getValue()).remove();
             }
-
+            
             game.enterState(Game.EDITOR);
         }
         
