@@ -47,7 +47,7 @@ public class TestWorld extends GameWorld {
         while ((o = process.poll()) != null) {
             process(o, container);
         }
-
+        
         if (input.isKeyPressed(Input.KEY_T)) {
             
             Iterator it = entities.entrySet().iterator();
@@ -55,8 +55,23 @@ public class TestWorld extends GameWorld {
                 Map.Entry pairs = (Map.Entry) it.next();
                 ((Entity) pairs.getValue()).remove();
             }
+            camera.setFollowing(null);
+            camera.x = camera.y = 0;
+            camera.zoom = 20;
             
             game.enterState(Game.EDITOR);
+        }
+        
+        if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+            add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
+        }
+        
+        if (input.isKeyPressed(Input.KEY_C)) {
+            if (camera.following == null) {
+                camera.setFollowing(c);
+            } else {
+                camera.setFollowing(null);
+            }
         }
         
         for (Segment s : c.skeleton.segments) {
@@ -88,11 +103,6 @@ public class TestWorld extends GameWorld {
                 }
             }
         }
-        
-        if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-            add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
-        }
-        
         
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
         
