@@ -59,11 +59,20 @@ public class Segment {
                 return this;
             }
             
-            if (elements[right].getClass().equals(e.getClass())) {
+            boolean sameRight = elements[right].getClass().equals(e.getClass());
+            boolean sameLeft = elements[leftTwo].getClass().equals(e.getClass());
+            
+            if (sameRight && sameLeft) {
                 e = elements[right];
-            }
-            if (elements[leftTwo].getClass().equals(e.getClass())) {
-                e = elements[leftTwo];
+                removeElement(leftTwo);
+                addElement(e, leftTwo);
+            } else {
+                if (sameRight) {
+                    e = elements[right];
+                }
+                if (sameLeft) {
+                    e = elements[leftTwo];
+                }
             }
             
             elements[location] = elements[left] = e;
@@ -72,7 +81,36 @@ public class Segment {
     }
     
     public Segment removeElement(int location) {
-        elements[location] = new BlankElement();
+        if (location == 8) {
+            elements[8] = new BlankElement();
+            return this;
+        } else {
+            int left = location - 1;
+            while (left < 0)
+                left += 8;
+            int leftTwo = location - 2;
+            while (leftTwo < 0)
+                leftTwo += 8;
+            int right = location + 1;
+            while (right > 7)
+                right -= 8;
+            
+            Element e = elements[location];
+            Element eLeft = elements[left];
+            if (e instanceof BlankElement && eLeft instanceof BlankElement) {
+                return this;
+            }
+            
+            elements[location] = elements[left] = new BlankElement();
+            
+            if (elements[right].getClass().equals(e.getClass())) {
+                System.out.println(elements[right]);
+                removeElement(right);
+            }
+            if (elements[leftTwo].getClass().equals(eLeft.getClass())) {
+                removeElement(leftTwo);
+            }
+        }
         return this;
     }
     
@@ -160,8 +198,7 @@ public class Segment {
             g.fill(p7);
         }
         if (!(elements[8] instanceof BlankElement)) {
-            g.setColor(elements[8].colour);
-            g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
+            elements[8].render(container, game, g);
         }
     }
     

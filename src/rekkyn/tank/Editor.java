@@ -80,6 +80,9 @@ public class Editor extends BasicGameState {
         if (input.isKeyPressed(Input.KEY_2)) {
             selected = 2;
         }
+        if (input.isKeyPressed(Input.KEY_3)) {
+            selected = 3;
+        }
         
         Iterator<Entry<Segment, Object[]>> it = cooldowns.entrySet().iterator();
         while (it.hasNext()) {
@@ -248,6 +251,107 @@ public class Editor extends BasicGameState {
                 g.translate(mouse.x, -mouse.y);
                 motor.render(container, game, g);
                 g.popTransform();
+            }
+        } else if (overSegment && selected == 3) {
+            float segX = skeleton.getSegment(mouseX, mouseY).x;
+            float segY = skeleton.getSegment(mouseX, mouseY).y;
+            float angle = (float) Math.atan2(mouse.y - segY, mouse.x - segX);
+            int pos = 0;
+            
+            if (angle > Math.PI / 8 && angle < 3 * Math.PI / 8) {
+                pos = 0;
+            }
+            if (angle < 5 * Math.PI / 8 && angle > 3 * Math.PI / 8) {
+                pos = 7;
+            }
+            if (angle > 5 * Math.PI / 8 && angle < 7 * Math.PI / 8) {
+                pos = 6;
+            }
+            if (angle < Math.PI / 8 && angle > -Math.PI / 8) {
+                pos = 1;
+            }
+            if (angle > -3 * Math.PI / 8 && angle < -Math.PI / 8) {
+                pos = 2;
+            }
+            if (angle < -3 * Math.PI / 8 && angle > -5 * Math.PI / 8) {
+                pos = 3;
+            }
+            if (angle > -7 * Math.PI / 8 && angle < -5 * Math.PI / 8) {
+                pos = 4;
+            }
+            if (angle > 7 * Math.PI / 8 || angle < -7 * Math.PI / 8) {
+                pos = 5;
+            }
+            
+            g.pushTransform();
+            g.translate(segX, -segY);
+            g.setColor(Colours.getAccent());
+            g.setLineWidth(2);
+            if (pos == 0 || pos == 1) {
+                g.drawLine(0.5F, -0.5F, 0.5F, 0);
+                g.drawLine(0.25F, -0.25F, 0.25F, 0);
+            }
+            if (pos == 2 || pos == 1) {
+                g.drawLine(0.5F, 0.5F, 0.5F, 0);
+                g.drawLine(0.25F, 0.25F, 0.25F, 0);
+            }
+            if (pos == 2 || pos == 3) {
+                g.drawLine(0.5F, 0.5F, 0, 0.5F);
+                g.drawLine(0.25F, 0.25F, 0, 0.25F);
+            }
+            if (pos == 4 || pos == 3) {
+                g.drawLine(-0.5F, 0.5F, 0, 0.5F);
+                g.drawLine(-0.25F, 0.25F, 0, 0.25F);
+            }
+            if (pos == 4 || pos == 5) {
+                g.drawLine(-0.5F, 0.5F, -0.5F, 0);
+                g.drawLine(-0.25F, 0.25F, -0.25F, 0);
+            }
+            if (pos == 6 || pos == 5) {
+                g.drawLine(-0.5F, -0.5F, -0.5F, 0);
+                g.drawLine(-0.25F, -0.25F, -0.25F, 0);
+            }
+            if (pos == 6 || pos == 7) {
+                g.drawLine(-0.5F, -0.5F, 0, -0.5F);
+                g.drawLine(-0.25F, -0.25F, 0, -0.25F);
+            }
+            if (pos == 0 || pos == 7) {
+                g.drawLine(0.5F, -0.5F, 0, -0.5F);
+                g.drawLine(0.25F, -0.25F, 0, -0.25F);
+            }
+            
+            if (pos == 0 || pos == 2) {
+                g.drawLine(0.25F, 0, 0.5F, 0);
+            }
+            if (pos == 1 || pos == 3) {
+                g.drawLine(0.25F, 0.25F, 0.5F, 0.5F);
+            }
+            if (pos == 2 || pos == 4) {
+                g.drawLine(0, 0.25F, 0, 0.5F);
+            }
+            if (pos == 3 || pos == 5) {
+                g.drawLine(-0.25F, 0.25F, -0.5F, 0.5F);
+            }
+            if (pos == 4 || pos == 6) {
+                g.drawLine(-0.25F, 0, -0.5F, 0);
+            }
+            if (pos == 5 || pos == 7) {
+                g.drawLine(-0.25F, -0.25F, -0.5F, -0.5F);
+            }
+            if (pos == 6 || pos == 0) {
+                g.drawLine(0, -0.25F, 0, -0.5F);
+            }
+            if (pos == 7 || pos == 1) {
+                g.drawLine(0.25F, -0.25F, 0.5F, -0.5F);
+            }
+            
+            g.popTransform();
+            
+            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                skeleton.getSegment(mouseX, mouseY).addElement(new Mouth(), pos);
+            }
+            if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+                skeleton.getSegment(mouseX, mouseY).removeElement(pos);
             }
         }
         

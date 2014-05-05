@@ -65,6 +65,9 @@ public class TestWorld extends GameWorld {
         if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
             add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
         }
+        if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
+            add(new Food(mousePos(container).x, mousePos(container).y, this));
+        }
         
         if (input.isKeyPressed(Input.KEY_C)) {
             if (camera.following == null) {
