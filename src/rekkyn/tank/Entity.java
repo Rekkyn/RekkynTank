@@ -54,7 +54,7 @@ public abstract class Entity {
         def.type = BodyType.DYNAMIC;
         body = world.physicsWorld.createBody(def);
         body.setLinearDamping(1.5F);
-        body.setAngularDamping(2.5F);
+        body.setAngularDamping(3F);
         
         init = true;
     }

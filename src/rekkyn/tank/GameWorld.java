@@ -110,19 +110,19 @@ public class GameWorld extends BasicGameState {
             Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
             Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
             if (input.isKeyDown(Input.KEY_W)) {
-                ml.power = power;
+                ml.desiredPower = power;
             } else if (input.isKeyDown(Input.KEY_S)) {
-                ml.power = -power;
+                ml.desiredPower = -power;
             } else {
-                ml.power = 0;
+                ml.desiredPower = 0;
             }
             
             if (input.isKeyDown(Input.KEY_R)) {
-                mr.power = power;
+                mr.desiredPower = power;
             } else if (input.isKeyDown(Input.KEY_F)) {
-                mr.power = -power;
+                mr.desiredPower = -power;
             } else {
-                mr.power = 0;
+                mr.desiredPower = 0;
             }
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
@@ -204,19 +204,19 @@ public class GameWorld extends BasicGameState {
         Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
         Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
         if (sendInput.down[Input.KEY_W]) {
-            ml.power = power;
+            ml.desiredPower = power;
         } else if (sendInput.down[Input.KEY_S]) {
-            ml.power = -power;
+            ml.desiredPower = -power;
         } else {
-            ml.power = 0;
+            ml.desiredPower = 0;
         }
         
         if (sendInput.down[Input.KEY_R]) {
-            mr.power = power;
+            mr.desiredPower = power;
         } else if (sendInput.down[Input.KEY_F]) {
-            mr.power = -power;
+            mr.desiredPower = -power;
         } else {
-            mr.power = 0;
+            mr.desiredPower = 0;
         }
         
     }

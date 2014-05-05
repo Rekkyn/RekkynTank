@@ -83,23 +83,23 @@ public class TestWorld extends GameWorld {
             
             if (s.y >= s.x) {
                 if (input.isKeyDown(Input.KEY_W)) {
-                    m.power = power;
+                    m.desiredPower = power;
                     continue;
                 } else if (input.isKeyDown(Input.KEY_S)) {
-                    m.power = -power;
+                    m.desiredPower = -power;
                     continue;
                 } else {
-                    m.power = 0;
+                    m.desiredPower = 0;
                 }
             }
             
             if (s.x >= s.y) {
                 if (input.isKeyDown(Input.KEY_R)) {
-                    m.power = power;
+                    m.desiredPower = power;
                 } else if (input.isKeyDown(Input.KEY_F)) {
-                    m.power = -power;
+                    m.desiredPower = -power;
                 } else {
-                    m.power = 0;
+                    m.desiredPower = 0;
                 }
             }
         }
