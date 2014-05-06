@@ -10,7 +10,6 @@ import rekkyn.tank.skeleton.Skeleton.ElementType;
 public class Motor extends Element {
     
     public float power = 0;
-    public float desiredPower = 0;
     public float changeAmount = 7;
     
     public Motor() {
@@ -28,14 +27,6 @@ public class Motor extends Element {
     
     @Override
     public void update(Creature c) {
-        if (desiredPower - power > changeAmount) {
-            power += changeAmount;
-        } else if (power - desiredPower > changeAmount) {
-            power -= changeAmount;
-        } else {
-            power = desiredPower;
-        }
-        
         Vec2 force = new Vec2((float) (Math.cos(c.angle) * power), (float) (Math.sin(c.angle) * power));
         
         Vec2 pos = c.body.getWorldPoint(c.getPosOnBody(segment.x, segment.y));

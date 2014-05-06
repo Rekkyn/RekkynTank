@@ -6,7 +6,7 @@ import java.util.Map;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
-import rekkyn.tank.skeleton.*;
+import rekkyn.tank.skeleton.Skeleton;
 
 
 public class TestWorld extends GameWorld {
@@ -77,36 +77,26 @@ public class TestWorld extends GameWorld {
             }
         }
         
-        for (Segment s : c.skeleton.segments) {
-            Motor m;
-            if (s.elements[8] instanceof Motor) {
-                m = (Motor) s.elements[8];
-            } else
-                continue;
-            
-            if (s.y >= s.x) {
-                if (input.isKeyDown(Input.KEY_W)) {
-                    m.desiredPower = power;
-                    continue;
-                } else if (input.isKeyDown(Input.KEY_S)) {
-                    m.desiredPower = -power;
-                    continue;
-                } else {
-                    m.desiredPower = 0;
-                }
-            }
-            
-            if (s.x >= s.y) {
-                if (input.isKeyDown(Input.KEY_R)) {
-                    m.desiredPower = power;
-                } else if (input.isKeyDown(Input.KEY_F)) {
-                    m.desiredPower = -power;
-                } else {
-                    m.desiredPower = 0;
-                }
-            }
+        float leftPower;
+        float rightPower;
+        if (input.isKeyDown(Input.KEY_W)) {
+            leftPower = power;
+        } else if (input.isKeyDown(Input.KEY_S)) {
+            leftPower = -power;
+        } else {
+            leftPower = 0;
         }
         
+        if (input.isKeyDown(Input.KEY_R)) {
+            rightPower = power;
+        } else if (input.isKeyDown(Input.KEY_F)) {
+            rightPower = -power;
+        } else {
+            rightPower = 0;
+        }
+        
+        c.setMotors(leftPower, rightPower);
+
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
         
         Iterator it = entities.entrySet().iterator();

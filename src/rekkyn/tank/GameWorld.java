@@ -17,7 +17,6 @@ import rekkyn.tank.network.NetworkManager.SendInput;
 import rekkyn.tank.network.*;
 import rekkyn.tank.network.client.GameClient;
 import rekkyn.tank.network.server.GameServer;
-import rekkyn.tank.skeleton.Motor;
 
 public class GameWorld extends BasicGameState {
     
@@ -41,7 +40,7 @@ public class GameWorld extends BasicGameState {
     
     Camera camera = new Camera();
     
-    float power = 70;
+    float power = 80;
     
     public GameWorld() {}
     
@@ -107,23 +106,25 @@ public class GameWorld extends BasicGameState {
             
             Creature player = players.get(server.host);
             
-            Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
-            Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
+            float leftPower;
+            float rightPower;
             if (input.isKeyDown(Input.KEY_W)) {
-                ml.desiredPower = power;
+                leftPower = power;
             } else if (input.isKeyDown(Input.KEY_S)) {
-                ml.desiredPower = -power;
+                leftPower = -power;
             } else {
-                ml.desiredPower = 0;
+                leftPower = 0;
             }
             
             if (input.isKeyDown(Input.KEY_R)) {
-                mr.desiredPower = power;
+                rightPower = power;
             } else if (input.isKeyDown(Input.KEY_F)) {
-                mr.desiredPower = -power;
+                rightPower = -power;
             } else {
-                mr.desiredPower = 0;
+                rightPower = 0;
             }
+            
+            player.setMotors(leftPower, rightPower);
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                 add(new Wall(mousePos(container).x, mousePos(container).y, 1, 1, this));
@@ -201,23 +202,25 @@ public class GameWorld extends BasicGameState {
         User user = sendInput.user;
         Creature player = players.get(user);
         
-        Motor ml = (Motor) player.skeleton.getSegment(0, 2).elements[8];
-        Motor mr = (Motor) player.skeleton.getSegment(2, 0).elements[8];
+        float leftPower;
+        float rightPower;
         if (sendInput.down[Input.KEY_W]) {
-            ml.desiredPower = power;
+            leftPower = power;
         } else if (sendInput.down[Input.KEY_S]) {
-            ml.desiredPower = -power;
+            leftPower = -power;
         } else {
-            ml.desiredPower = 0;
+            leftPower = 0;
         }
         
         if (sendInput.down[Input.KEY_R]) {
-            mr.desiredPower = power;
+            rightPower = power;
         } else if (sendInput.down[Input.KEY_F]) {
-            mr.desiredPower = -power;
+            rightPower = -power;
         } else {
-            mr.desiredPower = 0;
+            rightPower = 0;
         }
+        
+        player.setMotors(leftPower, rightPower);
         
     }
     

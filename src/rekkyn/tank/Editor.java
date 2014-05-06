@@ -27,7 +27,9 @@ public class Editor extends BasicGameState {
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
-        skeleton.addSegment(1, 1).addSegment(3, -2).addSegment(2, -2);
+        skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(1, 2);
+        skeleton.getSegment(0, 2).addMotor(true);
+        skeleton.getSegment(2, 2).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
         camera.zoom = 30;
     }
     

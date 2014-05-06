@@ -51,6 +51,25 @@ public class Creature extends Entity {
         return Util.rotateVec(new Vec2(x, y), (float) (-Math.PI / 4));
     }
     
+    public void setMotors(float leftPower, float rightPower) {
+        for (Segment s : skeleton.segments) {
+            Motor m;
+            if (s.elements[8] instanceof Motor) {
+                m = (Motor) s.elements[8];
+            } else
+                continue;
+            
+            if (s.y >= s.x) {
+                m.power = leftPower;
+            }
+            
+            if (s.x >= s.y) {
+                m.power = rightPower;
+            }
+        }
+        
+    }
+    
     @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         super.render(container, game, g);
