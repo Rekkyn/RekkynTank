@@ -255,8 +255,8 @@ public class Editor extends BasicGameState {
                 g.popTransform();
             }
         } else if (overSegment && selected == 3) {
-            float segX = skeleton.getSegment(mouseX, mouseY).x;
-            float segY = skeleton.getSegment(mouseX, mouseY).y;
+            int segX = skeleton.getSegment(mouseX, mouseY).x;
+            int segY = skeleton.getSegment(mouseX, mouseY).y;
             float angle = (float) Math.atan2(mouse.y - segY, mouse.x - segX);
             int pos = 0;
             
@@ -285,79 +285,19 @@ public class Editor extends BasicGameState {
                 pos = 5;
             }
             
-            g.pushTransform();
-            g.translate(segX, -segY);
-            g.setColor(Colours.getAccent());
-            g.setLineWidth(2);
-            if (pos == 0 || pos == 1) {
-                g.drawLine(0.5F, -0.5F, 0.5F, 0);
-                g.drawLine(0.25F, -0.25F, 0.25F, 0);
-            }
-            if (pos == 2 || pos == 1) {
-                g.drawLine(0.5F, 0.5F, 0.5F, 0);
-                g.drawLine(0.25F, 0.25F, 0.25F, 0);
-            }
-            if (pos == 2 || pos == 3) {
-                g.drawLine(0.5F, 0.5F, 0, 0.5F);
-                g.drawLine(0.25F, 0.25F, 0, 0.25F);
-            }
-            if (pos == 4 || pos == 3) {
-                g.drawLine(-0.5F, 0.5F, 0, 0.5F);
-                g.drawLine(-0.25F, 0.25F, 0, 0.25F);
-            }
-            if (pos == 4 || pos == 5) {
-                g.drawLine(-0.5F, 0.5F, -0.5F, 0);
-                g.drawLine(-0.25F, 0.25F, -0.25F, 0);
-            }
-            if (pos == 6 || pos == 5) {
-                g.drawLine(-0.5F, -0.5F, -0.5F, 0);
-                g.drawLine(-0.25F, -0.25F, -0.25F, 0);
-            }
-            if (pos == 6 || pos == 7) {
-                g.drawLine(-0.5F, -0.5F, 0, -0.5F);
-                g.drawLine(-0.25F, -0.25F, 0, -0.25F);
-            }
-            if (pos == 0 || pos == 7) {
-                g.drawLine(0.5F, -0.5F, 0, -0.5F);
-                g.drawLine(0.25F, -0.25F, 0, -0.25F);
-            }
+            boolean mirror = !(mouseX == mouseY && (pos == 0 || pos == 4));
+            int mirrorPos = 8 - pos < 8 ? 8 - pos : 0;
             
-            if (pos == 0 || pos == 2) {
-                g.drawLine(0.25F, 0, 0.5F, 0);
-            }
-            if (pos == 1 || pos == 3) {
-                g.drawLine(0.25F, 0.25F, 0.5F, 0.5F);
-            }
-            if (pos == 2 || pos == 4) {
-                g.drawLine(0, 0.25F, 0, 0.5F);
-            }
-            if (pos == 3 || pos == 5) {
-                g.drawLine(-0.25F, 0.25F, -0.5F, 0.5F);
-            }
-            if (pos == 4 || pos == 6) {
-                g.drawLine(-0.25F, 0, -0.5F, 0);
-            }
-            if (pos == 5 || pos == 7) {
-                g.drawLine(-0.25F, -0.25F, -0.5F, -0.5F);
-            }
-            if (pos == 6 || pos == 0) {
-                g.drawLine(0, -0.25F, 0, -0.5F);
-            }
-            if (pos == 7 || pos == 1) {
-                g.drawLine(0.25F, -0.25F, 0.5F, -0.5F);
-            }
-            
-            g.popTransform();
+            drawElementOutline(pos, segX, segY, g);
+            if (mirror) drawElementOutline(mirrorPos, segY, segX, g);
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                 skeleton.getSegment(mouseX, mouseY).addElement(new Mouth(), pos);
-                if (!(mouseX == mouseY && (pos == 0 || pos == 4)))
-                    skeleton.getSegment(mouseY, mouseX).addElement(new Mouth(), 8 - pos < 8 ? 8 - pos : 0);
+                if (mirror) skeleton.getSegment(mouseY, mouseX).addElement(new Mouth(), mirrorPos);
             }
             if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
                 skeleton.getSegment(mouseX, mouseY).removeElement(pos);
-                if (!(mouseX == mouseY && (pos == 0 || pos == 4)))
-                    skeleton.getSegment(mouseY, mouseX).removeElement(8 - pos < 8 ? 8 - pos : 0);
+                if (mirror) skeleton.getSegment(mouseY, mouseX).removeElement(mirrorPos);
             }
         }
         
@@ -403,6 +343,72 @@ public class Editor extends BasicGameState {
                 g.fillRect(s.x - 0.5F, -s.y + (float) cool / cooldown - 0.5F, 1, (float) -cool / cooldown + 1);
             }
         }
+    }
+    
+    public void drawElementOutline(int pos, int segX, int segY, Graphics g) {
+        g.pushTransform();
+        g.translate(segX, -segY);
+        g.setColor(Colours.getAccent());
+        g.setLineWidth(2);
+        if (pos == 0 || pos == 1) {
+            g.drawLine(0.5F, -0.5F, 0.5F, 0);
+            g.drawLine(0.25F, -0.25F, 0.25F, 0);
+        }
+        if (pos == 2 || pos == 1) {
+            g.drawLine(0.5F, 0.5F, 0.5F, 0);
+            g.drawLine(0.25F, 0.25F, 0.25F, 0);
+        }
+        if (pos == 2 || pos == 3) {
+            g.drawLine(0.5F, 0.5F, 0, 0.5F);
+            g.drawLine(0.25F, 0.25F, 0, 0.25F);
+        }
+        if (pos == 4 || pos == 3) {
+            g.drawLine(-0.5F, 0.5F, 0, 0.5F);
+            g.drawLine(-0.25F, 0.25F, 0, 0.25F);
+        }
+        if (pos == 4 || pos == 5) {
+            g.drawLine(-0.5F, 0.5F, -0.5F, 0);
+            g.drawLine(-0.25F, 0.25F, -0.25F, 0);
+        }
+        if (pos == 6 || pos == 5) {
+            g.drawLine(-0.5F, -0.5F, -0.5F, 0);
+            g.drawLine(-0.25F, -0.25F, -0.25F, 0);
+        }
+        if (pos == 6 || pos == 7) {
+            g.drawLine(-0.5F, -0.5F, 0, -0.5F);
+            g.drawLine(-0.25F, -0.25F, 0, -0.25F);
+        }
+        if (pos == 0 || pos == 7) {
+            g.drawLine(0.5F, -0.5F, 0, -0.5F);
+            g.drawLine(0.25F, -0.25F, 0, -0.25F);
+        }
+        
+        if (pos == 0 || pos == 2) {
+            g.drawLine(0.25F, 0, 0.5F, 0);
+        }
+        if (pos == 1 || pos == 3) {
+            g.drawLine(0.25F, 0.25F, 0.5F, 0.5F);
+        }
+        if (pos == 2 || pos == 4) {
+            g.drawLine(0, 0.25F, 0, 0.5F);
+        }
+        if (pos == 3 || pos == 5) {
+            g.drawLine(-0.25F, 0.25F, -0.5F, 0.5F);
+        }
+        if (pos == 4 || pos == 6) {
+            g.drawLine(-0.25F, 0, -0.5F, 0);
+        }
+        if (pos == 5 || pos == 7) {
+            g.drawLine(-0.25F, -0.25F, -0.5F, -0.5F);
+        }
+        if (pos == 6 || pos == 0) {
+            g.drawLine(0, -0.25F, 0, -0.5F);
+        }
+        if (pos == 7 || pos == 1) {
+            g.drawLine(0.25F, -0.25F, 0.5F, -0.5F);
+        }
+        
+        g.popTransform();
     }
     
     public Vec2 mousePos(GameContainer container) {
