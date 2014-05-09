@@ -64,8 +64,10 @@ public class Segment {
             
             if (sameRight && sameLeft) {
                 e = elements[right];
-                removeElement(leftTwo);
-                addElement(e, leftTwo);
+                if (!(elements[right] == elements[leftTwo])) {
+                    removeElement(leftTwo);
+                    addElement(e, leftTwo);
+                }
             } else {
                 if (sameRight) {
                     e = elements[right];
@@ -104,7 +106,6 @@ public class Segment {
             elements[location] = elements[left] = new BlankElement();
             
             if (elements[right].getClass().equals(e.getClass())) {
-                System.out.println(elements[right]);
                 removeElement(right);
             }
             if (elements[leftTwo].getClass().equals(eLeft.getClass())) {

@@ -351,9 +351,13 @@ public class Editor extends BasicGameState {
             
             if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                 skeleton.getSegment(mouseX, mouseY).addElement(new Mouth(), pos);
+                if (!(mouseX == mouseY && (pos == 0 || pos == 4)))
+                    skeleton.getSegment(mouseY, mouseX).addElement(new Mouth(), 8 - pos < 8 ? 8 - pos : 0);
             }
             if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
                 skeleton.getSegment(mouseX, mouseY).removeElement(pos);
+                if (!(mouseX == mouseY && (pos == 0 || pos == 4)))
+                    skeleton.getSegment(mouseY, mouseX).removeElement(8 - pos < 8 ? 8 - pos : 0);
             }
         }
         
