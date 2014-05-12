@@ -109,6 +109,11 @@ public class Editor extends BasicGameState {
     }
     
     @Override
+    public void mouseWheelMoved(int change) {
+        camera.zoom *= 1F + 0.002 * change / 120F;
+    }
+    
+    @Override
     public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
         Input input = container.getInput();
         
@@ -163,16 +168,13 @@ public class Editor extends BasicGameState {
             g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, 1);
             g.pushTransform();
             g.translate(s.x, -s.y);
-            s.render(container, game, g);
+            s.render(g);
             g.popTransform();
         }
         
         // draw half completed segments
         g.setColor(Colours.getBody());
         drawCompletingSegments(g);
-        
-        
-        
         
         // not rendering stuff
         Vec2 mouse = Util.rotateVec(mousePos(container), (float) (-Math.PI / 4));
@@ -210,8 +212,7 @@ public class Editor extends BasicGameState {
                 col.a = 0.5F;
                 g.setColor(col);
                 g.fillRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
-                if (mouseX != mouseY)
-                    g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
+                if (mouseX != mouseY) g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
                 
                 if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                     cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { cooldown, true });
@@ -224,13 +225,13 @@ public class Editor extends BasicGameState {
                 if (skeleton.getSegment(mouseX, mouseY).elements[8] instanceof BlankElement) {
                     g.pushTransform();
                     g.translate(mouseX, -mouseY);
-                    motor.render(container, game, g);
+                    motor.render(g);
                     g.popTransform();
                     
                     if (mouseX != mouseY) {
                         g.pushTransform();
                         g.translate(mouseY, -mouseX);
-                        motor.render(container, game, g);
+                        motor.render(g);
                         g.popTransform();
                     }
                     
@@ -251,10 +252,10 @@ public class Editor extends BasicGameState {
             } else {
                 g.pushTransform();
                 g.translate(mouse.x, -mouse.y);
-                motor.render(container, game, g);
+                motor.render(g);
                 g.popTransform();
             }
-        } else if (overSegment && selected == 3) {
+        } else if (overSegment && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart) && selected == 3) {
             int segX = skeleton.getSegment(mouseX, mouseY).x;
             int segY = skeleton.getSegment(mouseX, mouseY).y;
             float angle = (float) Math.atan2(mouse.y - segY, mouse.x - segX);
@@ -300,8 +301,6 @@ public class Editor extends BasicGameState {
                 if (mirror) skeleton.getSegment(mouseY, mouseX).removeElement(mirrorPos);
             }
         }
-        
-        
         g.popTransform();
     }
     

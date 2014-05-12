@@ -267,7 +267,7 @@ public class GameWorld extends BasicGameState {
             Entity e = (Entity) pairs.getValue();
             
             e.prerender(g);
-            e.render(container, game, g);
+            e.render(g);
             e.postrender(g);
         }
         

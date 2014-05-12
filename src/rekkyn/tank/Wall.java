@@ -27,8 +27,8 @@ public class Wall extends Entity {
     }
     
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        super.render(container, game, g);
+    public void render(Graphics g) {
+        super.render(g);
         g.setColor(Colours.getBody());
         g.fillRect(x - width / 2, -y - height / 2, width, height);
     }

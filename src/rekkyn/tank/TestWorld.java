@@ -8,7 +8,6 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.skeleton.Skeleton;
 
-
 public class TestWorld extends GameWorld {
     
     Creature c;
@@ -96,7 +95,7 @@ public class TestWorld extends GameWorld {
         }
         
         c.setMotors(leftPower, rightPower);
-
+        
         physicsWorld.step(TIMESTEP / 1000, 40, 20);
         
         Iterator it = entities.entrySet().iterator();

@@ -2,8 +2,8 @@ package rekkyn.tank;
 
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.dynamics.FixtureDef;
-import org.newdawn.slick.*;
-import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 public class Particle extends Entity {
     
@@ -45,8 +45,8 @@ public class Particle extends Entity {
     }
     
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        super.render(container, game, g);
+    public void render(Graphics g) {
+        super.render(g);
         g.setColor(colour);
         g.fillOval(x - radius, -y - radius, 2 * radius, 2 * radius);
     }

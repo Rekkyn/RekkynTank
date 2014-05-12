@@ -1,8 +1,7 @@
 package rekkyn.tank.skeleton;
 
-import org.newdawn.slick.*;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Polygon;
-import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.skeleton.Skeleton.ElementType;
 
@@ -78,38 +77,25 @@ public class Segment {
             }
             
             elements[location] = elements[left] = e;
+            e.locations.add(new Integer[] { x, y, location });
+            e.locations.add(new Integer[] { x, y, left });
         }
         return this;
     }
     
-    public Segment removeElement(int location) {
-        if (location == 8) {
-            elements[8] = new BlankElement();
-            return this;
-        } else {
-            int left = location - 1;
-            while (left < 0)
-                left += 8;
-            int leftTwo = location - 2;
-            while (leftTwo < 0)
-                leftTwo += 8;
-            int right = location + 1;
-            while (right > 7)
-                right -= 8;
-            
-            Element e = elements[location];
-            Element eLeft = elements[left];
-            if (e instanceof BlankElement && eLeft instanceof BlankElement) {
-                return this;
+    public Segment removeElement(int pos) {
+        if (!(elements[pos] instanceof BlankElement)) {
+            for (Integer[] locations : elements[pos].locations) {
+                skeleton.getSegment(locations[0], locations[1]).elements[locations[2]] = new BlankElement();
             }
-            
-            elements[location] = elements[left] = new BlankElement();
-            
-            if (elements[right].getClass().equals(e.getClass())) {
-                removeElement(right);
-            }
-            if (elements[leftTwo].getClass().equals(eLeft.getClass())) {
-                removeElement(leftTwo);
+        }
+        int left = pos - 1;
+        while (left < 0)
+            left += 8;
+        
+        if (!(elements[left] instanceof BlankElement)) {
+            for (Integer[] locations : elements[left].locations) {
+                skeleton.getSegment(locations[0], locations[1]).elements[locations[2]] = new BlankElement();
             }
         }
         return this;
@@ -124,83 +110,70 @@ public class Segment {
         return this;
     }
     
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        g.setColor(Color.cyan);
-        if (!(elements[0] instanceof BlankElement)) {
-            g.setColor(elements[0].colour);
-            Polygon p0 = new Polygon();
-            p0.addPoint(0.5F, -0.5F);
-            p0.addPoint(0.5F, 0);
-            p0.addPoint(0.25F, 0);
-            p0.addPoint(0.25F, -0.25F);
-            g.fill(p0);
+    public void render(Graphics g) {
+        for (int i = 0; i <= 8; i++) {
+            if (!(elements[i] instanceof BlankElement)) {
+                g.setColor(elements[i].colour);
+                renderElement(i, g);
+            }
         }
-        if (!(elements[1] instanceof BlankElement)) {
-            g.setColor(elements[1].colour);
-            Polygon p1 = new Polygon();
-            p1.addPoint(0.5F, 0.5F);
-            p1.addPoint(0.5F, 0);
-            p1.addPoint(0.25F, 0);
-            p1.addPoint(0.25F, 0.25F);
-            g.fill(p1);
+    }
+    
+    public void renderElement(int pos, Graphics g) {
+        Polygon p = new Polygon();
+        switch (pos) {
+            case 0:
+                p.addPoint(0.5F, -0.5F);
+                p.addPoint(0.5F, 0);
+                p.addPoint(0.25F, 0);
+                p.addPoint(0.25F, -0.25F);
+                break;
+            case 1:
+                p.addPoint(0.5F, 0.5F);
+                p.addPoint(0.5F, 0);
+                p.addPoint(0.25F, 0);
+                p.addPoint(0.25F, 0.25F);
+                break;
+            case 2:
+                p.addPoint(0, 0.5F);
+                p.addPoint(0, 0.25F);
+                p.addPoint(0.25F, 0.25F);
+                p.addPoint(0.5F, 0.5F);
+                break;
+            case 3:
+                p.addPoint(0, 0.5F);
+                p.addPoint(0, 0.25F);
+                p.addPoint(-0.25F, 0.25F);
+                p.addPoint(-0.5F, 0.5F);
+                break;
+            case 4:
+                p.addPoint(-0.5F, 0.5F);
+                p.addPoint(-0.5F, 0);
+                p.addPoint(-0.25F, 0);
+                p.addPoint(-0.25F, 0.25F);
+                break;
+            case 5:
+                p.addPoint(-0.5F, -0.5F);
+                p.addPoint(-0.5F, 0);
+                p.addPoint(-0.25F, 0);
+                p.addPoint(-0.25F, -0.25F);
+                break;
+            case 6:
+                p.addPoint(0, -0.5F);
+                p.addPoint(0, -0.25F);
+                p.addPoint(-0.25F, -0.25F);
+                p.addPoint(-0.5F, -0.5F);
+                break;
+            case 7:
+                p.addPoint(0, -0.5F);
+                p.addPoint(0, -0.25F);
+                p.addPoint(0.25F, -0.25F);
+                p.addPoint(0.5F, -0.5F);
+                break;
+            case 8:
+                elements[8].render(g);
         }
-        if (!(elements[2] instanceof BlankElement)) {
-            g.setColor(elements[2].colour);
-            Polygon p2 = new Polygon();
-            p2.addPoint(0, 0.5F);
-            p2.addPoint(0, 0.25F);
-            p2.addPoint(0.25F, 0.25F);
-            p2.addPoint(0.5F, 0.5F);
-            g.fill(p2);
-        }
-        if (!(elements[3] instanceof BlankElement)) {
-            g.setColor(elements[3].colour);
-            Polygon p3 = new Polygon();
-            p3.addPoint(0, 0.5F);
-            p3.addPoint(0, 0.25F);
-            p3.addPoint(-0.25F, 0.25F);
-            p3.addPoint(-0.5F, 0.5F);
-            g.fill(p3);
-        }
-        if (!(elements[4] instanceof BlankElement)) {
-            g.setColor(elements[4].colour);
-            Polygon p4 = new Polygon();
-            p4.addPoint(-0.5F, 0.5F);
-            p4.addPoint(-0.5F, 0);
-            p4.addPoint(-0.25F, 0);
-            p4.addPoint(-0.25F, 0.25F);
-            g.fill(p4);
-        }
-        if (!(elements[5] instanceof BlankElement)) {
-            g.setColor(elements[5].colour);
-            Polygon p5 = new Polygon();
-            p5.addPoint(-0.5F, -0.5F);
-            p5.addPoint(-0.5F, 0);
-            p5.addPoint(-0.25F, 0);
-            p5.addPoint(-0.25F, -0.25F);
-            g.fill(p5);
-        }
-        if (!(elements[6] instanceof BlankElement)) {
-            g.setColor(elements[6].colour);
-            Polygon p6 = new Polygon();
-            p6.addPoint(0, -0.5F);
-            p6.addPoint(0, -0.25F);
-            p6.addPoint(-0.25F, -0.25F);
-            p6.addPoint(-0.5F, -0.5F);
-            g.fill(p6);
-        }
-        if (!(elements[7] instanceof BlankElement)) {
-            g.setColor(elements[7].colour);
-            Polygon p7 = new Polygon();
-            p7.addPoint(0, -0.5F);
-            p7.addPoint(0, -0.25F);
-            p7.addPoint(0.25F, -0.25F);
-            p7.addPoint(0.5F, -0.5F);
-            g.fill(p7);
-        }
-        if (!(elements[8] instanceof BlankElement)) {
-            elements[8].render(container, game, g);
-        }
+        g.fill(p);
     }
     
     @Deprecated

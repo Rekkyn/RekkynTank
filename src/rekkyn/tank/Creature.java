@@ -71,8 +71,8 @@ public class Creature extends Entity {
     }
     
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        super.render(container, game, g);
+    public void render(Graphics g) {
+        super.render(g);
         g.pushTransform();
         g.rotate(x, -y, 45);
         for (Segment s : skeleton.segments) {
@@ -86,7 +86,7 @@ public class Creature extends Entity {
             g.fillRect(drawX - 0.5F, drawY - 0.5F, 1, 1);
             g.pushTransform();
             g.translate(x + s.x, -y - s.y);
-            s.render(container, game, g);
+            s.render(g);
             g.popTransform();
         }
         g.popTransform();

@@ -80,7 +80,7 @@ public abstract class Entity {
         g.rotate(x, -y, world.partialTicks * (float) Math.toDegrees(-angle + prevAngle));
     }
     
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
+    public void render(Graphics g) {}
     
     public void renderBackground(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
     

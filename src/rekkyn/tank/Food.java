@@ -1,8 +1,7 @@
 package rekkyn.tank;
 
 import org.jbox2d.collision.shapes.CircleShape;
-import org.newdawn.slick.*;
-import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.Graphics;
 
 public class Food extends Entity {
     
@@ -22,8 +21,8 @@ public class Food extends Entity {
     }
     
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
-        super.render(container, game, g);
+    public void render(Graphics g) {
+        super.render(g);
         g.setColor(Colours.getAccent());
         g.fillOval(x - 0.25F, -y - 0.25F, 0.5F, 0.5F);
     }

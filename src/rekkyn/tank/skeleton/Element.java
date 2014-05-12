@@ -1,7 +1,10 @@
 package rekkyn.tank.skeleton;
 
-import org.newdawn.slick.*;
-import org.newdawn.slick.state.StateBasedGame;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 import rekkyn.tank.Creature;
 import rekkyn.tank.GameWorld;
@@ -13,6 +16,8 @@ public class Element {
     public ElementType type;
     public Segment segment;
     
+    public List<Integer[]> locations = new ArrayList<Integer[]>();
+    
     @Optional(value = "")
     public Color colour;
     
@@ -20,7 +25,7 @@ public class Element {
         segment = s;
     }
     
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {}
+    public void render(Graphics g) {}
     
     public void update(Creature c) {}
     

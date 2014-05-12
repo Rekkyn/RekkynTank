@@ -1,8 +1,8 @@
 package rekkyn.tank.skeleton;
 
 import org.jbox2d.common.Vec2;
-import org.newdawn.slick.*;
-import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 import rekkyn.tank.*;
 import rekkyn.tank.skeleton.Skeleton.ElementType;
@@ -45,7 +45,7 @@ public class Motor extends Element {
     }
     
     @Override
-    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+    public void render(Graphics g) {
         g.setColor(colour);
         g.fillRect(-0.25F, -0.25F, 0.5F, 0.5F);
     }

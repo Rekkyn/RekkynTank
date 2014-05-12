@@ -21,7 +21,7 @@ public class Menu extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         System.out.println("Enter 0 for server.\nEnter 1 for client.\nEnter 3 for editor.");
-
+        
         int i = s.nextInt();
         if (i == 3) {
             game.enterState(Game.EDITOR);

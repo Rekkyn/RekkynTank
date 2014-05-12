@@ -47,7 +47,7 @@ public class Skeleton {
     public void removeSegment(Segment s) {
         segments.remove(getSegment(s.x, s.y));
     }
-
+    
     public Segment getSegment(int x, int y) {
         
         for (Segment s : segments) {
