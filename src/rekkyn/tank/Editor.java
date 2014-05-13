@@ -141,6 +141,18 @@ public class Editor extends BasicGameState {
         for (int i = -gridSize - 1; i <= gridSize; i++) {
             g.drawLine(-f + (i - 1) / root2, f + (i + 1) / root2, f + i / root2, -f + i / root2);
         }
+        
+        if (camera.zoom > 40) {
+            Color c1 = Colours.getDark();
+            c1.a = 0.2F / 30 * (camera.zoom - 40);
+            g.setColor(c1);
+            for (float i = -gridSize - 1; i <= gridSize; i += 0.5F) {
+                g.drawLine(-f + (i - 1) / root2, -f - (i + 1) / root2, f + i / root2, f - i / root2);
+            }
+            for (float i = -gridSize - 1; i <= gridSize; i += 0.5F) {
+                g.drawLine(-f + (i - 1) / root2, f + (i + 1) / root2, f + i / root2, -f + i / root2);
+            }
+        }
         g.popTransform();
         
         g.rotate(0, 0, -45);
@@ -256,48 +268,69 @@ public class Editor extends BasicGameState {
                 g.popTransform();
             }
         } else if (overSegment && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart) && selected == 3) {
-            int segX = skeleton.getSegment(mouseX, mouseY).x;
-            int segY = skeleton.getSegment(mouseX, mouseY).y;
-            float angle = (float) Math.atan2(mouse.y - segY, mouse.x - segX);
+            Segment segment = skeleton.getSegment(mouseX, mouseY);
+            float angle = (float) Math.atan2(mouse.y - mouseY, mouse.x - mouseX);
             int pos = 0;
             
-            if (angle > Math.PI / 8 && angle < 3 * Math.PI / 8) {
+            final float angle1 = (float) Math.atan(0.5F);
+            final float angle2 = (float) Math.atan(2F);
+            final float angle3 = (float) (Math.PI - Math.atan(2F));
+            final float angle4 = (float) (Math.PI - Math.atan(0.5F));
+            final float angle5 = (float) Math.atan(-0.5F);
+            final float angle6 = (float) Math.atan(-2F);
+            final float angle7 = (float) (Math.atan(2F) - Math.PI);
+            final float angle8 = (float) (Math.atan(0.5F) - Math.PI);
+            
+            
+            if (angle > angle1 && angle < angle2) {
                 pos = 0;
             }
-            if (angle < 5 * Math.PI / 8 && angle > 3 * Math.PI / 8) {
+            if (angle < angle3 && angle > angle2) {
                 pos = 7;
             }
-            if (angle > 5 * Math.PI / 8 && angle < 7 * Math.PI / 8) {
+            if (angle > angle3 && angle < angle4) {
                 pos = 6;
             }
-            if (angle < Math.PI / 8 && angle > -Math.PI / 8) {
+            if (angle < angle1 && angle > angle5) {
                 pos = 1;
             }
-            if (angle > -3 * Math.PI / 8 && angle < -Math.PI / 8) {
+            if (angle > angle6 && angle < angle5) {
                 pos = 2;
             }
-            if (angle < -3 * Math.PI / 8 && angle > -5 * Math.PI / 8) {
+            if (angle < angle6 && angle > angle7) {
                 pos = 3;
             }
-            if (angle > -7 * Math.PI / 8 && angle < -5 * Math.PI / 8) {
+            if (angle > angle8 && angle < angle7) {
                 pos = 4;
             }
-            if (angle > 7 * Math.PI / 8 || angle < -7 * Math.PI / 8) {
+            if (angle > angle4 || angle < angle8) {
                 pos = 5;
             }
             
             boolean mirror = !(mouseX == mouseY && (pos == 0 || pos == 4));
             int mirrorPos = 8 - pos < 8 ? 8 - pos : 0;
+            int[][] locations = skeleton.getLocationsToAdd(mouseX, mouseY, pos, angle);
             
-            drawElementOutline(pos, segX, segY, g);
-            if (mirror) drawElementOutline(mirrorPos, segY, segX, g);
-            
-            if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                skeleton.getSegment(mouseX, mouseY).addElement(new Mouth(), pos);
-                if (mirror) skeleton.getSegment(mouseY, mouseX).addElement(new Mouth(), mirrorPos);
+            if (locations != null) {
+                Color col = Colours.getAccent();
+                col.a = 0.5F;
+                g.setColor(col);
+                g.pushTransform();
+                g.translate(locations[0][0], -locations[0][1]);
+                skeleton.getSegment(locations[0][0], locations[0][1]).renderElement(locations[0][2], g);
+                g.popTransform();
+                g.pushTransform();
+                g.translate(locations[1][0], -locations[1][1]);
+                skeleton.getSegment(locations[1][0], locations[1][1]).renderElement(locations[1][2], g);
+                g.popTransform();
+                
+                if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
+                    skeleton.addElement(new Mouth(), locations, mirror);
+                }
             }
+            
             if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-                skeleton.getSegment(mouseX, mouseY).removeElement(pos);
+                segment.removeElement(pos);
                 if (mirror) skeleton.getSegment(mouseY, mouseX).removeElement(mirrorPos);
             }
         }
@@ -344,71 +377,6 @@ public class Editor extends BasicGameState {
         }
     }
     
-    public void drawElementOutline(int pos, int segX, int segY, Graphics g) {
-        g.pushTransform();
-        g.translate(segX, -segY);
-        g.setColor(Colours.getAccent());
-        g.setLineWidth(2);
-        if (pos == 0 || pos == 1) {
-            g.drawLine(0.5F, -0.5F, 0.5F, 0);
-            g.drawLine(0.25F, -0.25F, 0.25F, 0);
-        }
-        if (pos == 2 || pos == 1) {
-            g.drawLine(0.5F, 0.5F, 0.5F, 0);
-            g.drawLine(0.25F, 0.25F, 0.25F, 0);
-        }
-        if (pos == 2 || pos == 3) {
-            g.drawLine(0.5F, 0.5F, 0, 0.5F);
-            g.drawLine(0.25F, 0.25F, 0, 0.25F);
-        }
-        if (pos == 4 || pos == 3) {
-            g.drawLine(-0.5F, 0.5F, 0, 0.5F);
-            g.drawLine(-0.25F, 0.25F, 0, 0.25F);
-        }
-        if (pos == 4 || pos == 5) {
-            g.drawLine(-0.5F, 0.5F, -0.5F, 0);
-            g.drawLine(-0.25F, 0.25F, -0.25F, 0);
-        }
-        if (pos == 6 || pos == 5) {
-            g.drawLine(-0.5F, -0.5F, -0.5F, 0);
-            g.drawLine(-0.25F, -0.25F, -0.25F, 0);
-        }
-        if (pos == 6 || pos == 7) {
-            g.drawLine(-0.5F, -0.5F, 0, -0.5F);
-            g.drawLine(-0.25F, -0.25F, 0, -0.25F);
-        }
-        if (pos == 0 || pos == 7) {
-            g.drawLine(0.5F, -0.5F, 0, -0.5F);
-            g.drawLine(0.25F, -0.25F, 0, -0.25F);
-        }
-        
-        if (pos == 0 || pos == 2) {
-            g.drawLine(0.25F, 0, 0.5F, 0);
-        }
-        if (pos == 1 || pos == 3) {
-            g.drawLine(0.25F, 0.25F, 0.5F, 0.5F);
-        }
-        if (pos == 2 || pos == 4) {
-            g.drawLine(0, 0.25F, 0, 0.5F);
-        }
-        if (pos == 3 || pos == 5) {
-            g.drawLine(-0.25F, 0.25F, -0.5F, 0.5F);
-        }
-        if (pos == 4 || pos == 6) {
-            g.drawLine(-0.25F, 0, -0.5F, 0);
-        }
-        if (pos == 5 || pos == 7) {
-            g.drawLine(-0.25F, -0.25F, -0.5F, -0.5F);
-        }
-        if (pos == 6 || pos == 0) {
-            g.drawLine(0, -0.25F, 0, -0.5F);
-        }
-        if (pos == 7 || pos == 1) {
-            g.drawLine(0.25F, -0.25F, 0.5F, -0.5F);
-        }
-        
-        g.popTransform();
-    }
     
     public Vec2 mousePos(GameContainer container) {
         Input input = container.getInput();

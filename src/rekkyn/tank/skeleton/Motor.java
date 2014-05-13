@@ -11,6 +11,7 @@ public class Motor extends Element {
     
     public float power = 0;
     public float changeAmount = 7;
+    public Segment segment;
     
     public Motor() {
         type = ElementType.CENTRE;
@@ -19,7 +20,7 @@ public class Motor extends Element {
     }
     
     public Motor(Segment s) {
-        super(s);
+        segment = s;
         type = ElementType.CENTRE;
         colour = new Color(0, 0, 0);
         colour.a = 0.75F;

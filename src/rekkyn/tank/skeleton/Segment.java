@@ -21,8 +21,6 @@ public class Segment {
     }
     
     public Segment addElement(Element e, int location) {
-        e.segment = this;
-        
         if (this instanceof Heart) {
             System.err.println("You can't add elements to hearts.");
             return this;
@@ -77,15 +75,15 @@ public class Segment {
             }
             
             elements[location] = elements[left] = e;
-            e.locations.add(new Integer[] { x, y, location });
-            e.locations.add(new Integer[] { x, y, left });
+            e.locations.add(new int[] { x, y, location });
+            e.locations.add(new int[] { x, y, left });
         }
         return this;
     }
     
     public Segment removeElement(int pos) {
         if (!(elements[pos] instanceof BlankElement)) {
-            for (Integer[] locations : elements[pos].locations) {
+            for (int[] locations : elements[pos].locations) {
                 skeleton.getSegment(locations[0], locations[1]).elements[locations[2]] = new BlankElement();
             }
         }
@@ -94,7 +92,7 @@ public class Segment {
             left += 8;
         
         if (!(elements[left] instanceof BlankElement)) {
-            for (Integer[] locations : elements[left].locations) {
+            for (int[] locations : elements[left].locations) {
                 skeleton.getSegment(locations[0], locations[1]).elements[locations[2]] = new BlankElement();
             }
         }

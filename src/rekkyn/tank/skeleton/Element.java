@@ -14,15 +14,14 @@ import com.esotericsoftware.kryo.serializers.FieldSerializer.Optional;
 
 public class Element {
     public ElementType type;
-    public Segment segment;
     
-    public List<Integer[]> locations = new ArrayList<Integer[]>();
+    public List<int[]> locations = new ArrayList<int[]>();
     
     @Optional(value = "")
     public Color colour;
     
-    public Element(Segment s) {
-        segment = s;
+    public Element(List<int[]> locations) {
+        this.locations = locations;
     }
     
     public void render(Graphics g) {}
