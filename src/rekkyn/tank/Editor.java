@@ -28,8 +28,8 @@ public class Editor extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(1, 2);
-        skeleton.getSegment(0, 2).addMotor(true);
-        skeleton.getSegment(2, 2).addElement(new Mouth(), 1).addElement(new Mouth(), 7);
+        skeleton.getSegment(0, 2).addMotor();
+        skeleton.addElement(new Mouth(), 2, 2, 1);
         camera.zoom = 30;
     }
     
@@ -194,6 +194,8 @@ public class Editor extends BasicGameState {
         int mouseY = Math.round(mouse.y);
         boolean[] neighbours = getNeighbours(mouseX, mouseY);
         
+        Segment segment = skeleton.getSegment(mouseX, mouseY);
+        
         boolean overSegment = false;
         for (Segment s : skeleton.segments) {
             if (s.x == mouseX && s.y == mouseY) {
@@ -211,7 +213,7 @@ public class Editor extends BasicGameState {
             }
             
             // remove segment
-            if (overSegment && input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart)) {
+            if (overSegment && input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) && !(segment instanceof Heart)) {
                 cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { 0, false });
                 if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { 0, false });
                 skeleton.removeSegment(mouseX, mouseY);
@@ -233,8 +235,8 @@ public class Editor extends BasicGameState {
             }
         } else if (selected == 2) {
             Motor motor = new Motor();
-            if (overSegment && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart)) {
-                if (skeleton.getSegment(mouseX, mouseY).elements[8] instanceof BlankElement) {
+            if (overSegment && !(segment instanceof Heart)) {
+                if (segment.elements[8] instanceof BlankElement) {
                     g.pushTransform();
                     g.translate(mouseX, -mouseY);
                     motor.render(g);
@@ -248,8 +250,7 @@ public class Editor extends BasicGameState {
                     }
                     
                     if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                        skeleton.getSegment(mouseX, mouseY).addElement(motor, 8);
-                        if (mouseX != mouseY) skeleton.getSegment(mouseY, mouseX).addElement(new Motor(), 8);
+                        segment.addMotor();
                     }
                 } else {
                     g.setColor(Colours.getAccent());
@@ -257,7 +258,7 @@ public class Editor extends BasicGameState {
                     g.drawRect(mouseX - 0.25F, -mouseY - 0.25F, 0.5F, 0.5F);
                     if (mouseX != mouseY) g.drawRect(mouseY - 0.25F, -mouseX - 0.25F, 0.5F, 0.5F);
                     if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-                        skeleton.getSegment(mouseX, mouseY).removeElement(8);
+                        segment.removeElement(8);
                         if (mouseX != mouseY) skeleton.getSegment(mouseY, mouseX).removeElement(8);
                     }
                 }
@@ -267,8 +268,7 @@ public class Editor extends BasicGameState {
                 motor.render(g);
                 g.popTransform();
             }
-        } else if (overSegment && !(skeleton.getSegment(mouseX, mouseY) instanceof Heart) && selected == 3) {
-            Segment segment = skeleton.getSegment(mouseX, mouseY);
+        } else if (overSegment && !(segment instanceof Heart) && selected == 3) {
             float angle = (float) Math.atan2(mouse.y - mouseY, mouse.x - mouseX);
             int pos = 0;
             
@@ -307,7 +307,7 @@ public class Editor extends BasicGameState {
                 pos = 5;
             }
             
-            boolean mirror = !(mouseX == mouseY && (pos == 0 || pos == 4));
+            boolean mirror = skeleton.shouldMirror(mouseX, mouseY, pos);
             int mirrorPos = 8 - pos < 8 ? 8 - pos : 0;
             int[][] locations = skeleton.getLocationsToAdd(mouseX, mouseY, pos, angle);
             
@@ -324,14 +324,24 @@ public class Editor extends BasicGameState {
                 skeleton.getSegment(locations[1][0], locations[1][1]).renderElement(locations[1][2], g);
                 g.popTransform();
                 
+                if (mirror) {
+                    g.pushTransform();
+                    g.translate(locations[0][1], -locations[0][0]);
+                    skeleton.getSegment(locations[0][1], locations[0][0]).renderElement(7 - locations[0][2], g);
+                    g.popTransform();
+                    g.pushTransform();
+                    g.translate(locations[1][1], -locations[1][0]);
+                    skeleton.getSegment(locations[1][1], locations[1][0]).renderElement(7 - locations[1][2], g);
+                    g.popTransform();
+                }
+                
                 if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                    skeleton.addElement(new Mouth(), locations, mirror);
+                    skeleton.addElementAtLocation(new Mouth(), locations, mirror);
                 }
             }
             
             if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-                segment.removeElement(pos);
-                if (mirror) skeleton.getSegment(mouseY, mouseX).removeElement(mirrorPos);
+                skeleton.removeElement(mouseX, mouseY, pos, angle, mirror);
             }
         }
         g.popTransform();

@@ -59,7 +59,19 @@ public class Skeleton {
         return null;
     }
     
-    public Skeleton addElement(Element e, int[][] locations, boolean mirror) {
+    public Skeleton addElement(Element e, int segX, int segY, int pos) {
+        if (pos == 8) {
+            if (!(getSegment(segX, segY).elements[pos] instanceof BlankElement)) {
+                System.err.println("Tried to put an element in a taken spot;");
+                return this;
+            }
+            getSegment(segX, segY).elements[8] = e;
+            return this;
+        }
+        return addElementAtLocation(e, getLocationsToAdd(segX, segY, pos, 0), shouldMirror(segX, segY, pos));
+    }
+    
+    public Skeleton addElementAtLocation(Element e, int[][] locations, boolean mirror) {
         Segment seg1 = getSegment(locations[0][0], locations[0][1]);
         Segment seg2 = getSegment(locations[1][0], locations[1][1]);
         int pos1 = locations[0][2];
@@ -112,7 +124,7 @@ public class Skeleton {
                 e1.printStackTrace();
             }
             
-            addElement(e2, new int[][] { { locations[0][1], locations[0][0], 7 - locations[0][2] },
+            addElementAtLocation(e2, new int[][] { { locations[0][1], locations[0][0], 7 - locations[0][2] },
                     { locations[1][1], locations[1][0], 7 - locations[1][2] } }, false);
         }
         return this;
@@ -140,7 +152,6 @@ public class Skeleton {
             result = new int[][] { { segX, segY, 6 }, { segX, segY, 7 } };
         } else if (pos % 2 == 0) {
             double[] angles = new double[] { Math.PI / 4, 0, -Math.PI / 4, 0, -3 * Math.PI / 4, 0, 3 * Math.PI / 4 };
-            System.out.println(angle);
             if (angle < angles[pos] && onEdge(segX, segY, pos)) {
                 result = new int[][] { { segX, segY, pos }, getLocationToLeft(segX, segY, pos) };
             } else if (onEdge(segX, segY, left)) {
@@ -148,6 +159,51 @@ public class Skeleton {
             }
         }
         return result;
+    }
+    
+    public Skeleton removeElement(int segX, int segY, int pos, float angle, boolean mirror) {
+        
+        int[][] locations = getLocationsToAdd(segX, segY, pos, angle);
+        
+        if (locations == null) return this;
+
+        Segment seg1 = getSegment(locations[0][0], locations[0][1]);
+        Segment seg2 = getSegment(locations[1][0], locations[1][1]);
+        int pos1 = locations[0][2];
+        int pos2 = locations[1][2];
+        
+        if (!(seg1.elements[pos1] instanceof BlankElement)) {
+            for (int[] loc : seg1.elements[pos1].locations) {
+                getSegment(loc[0], loc[1]).removeElement(loc[2]);
+            }
+        }
+        
+        if (!(seg2.elements[pos2] instanceof BlankElement)) {
+            for (int[] loc : seg2.elements[pos2].locations) {
+                getSegment(loc[0], loc[1]).removeElement(loc[2]);
+            }
+        }
+        
+        if (mirror) {
+            seg1 = getSegment(locations[0][1], locations[0][0]);
+            seg2 = getSegment(locations[1][1], locations[1][0]);
+            pos1 = 7 - locations[0][2];
+            pos2 = 7 - locations[1][2];
+            
+            if (!(seg1.elements[pos1] instanceof BlankElement)) {
+                for (int[] loc : seg1.elements[pos1].locations) {
+                    getSegment(loc[0], loc[1]).removeElement(loc[2]);
+                }
+            }
+            
+            if (!(seg2.elements[pos2] instanceof BlankElement)) {
+                for (int[] loc : seg2.elements[pos2].locations) {
+                    getSegment(loc[0], loc[1]).removeElement(loc[2]);
+                }
+            }
+        }
+        
+        return this;
     }
     
     /** @param segX
@@ -251,6 +307,13 @@ public class Skeleton {
         if ((pos == 6 || pos == 7) && getSegment(segX, segY + 1) != null) {
             return false;
         }
+        return true;
+    }
+    
+    public boolean shouldMirror(int segX, int segY, int pos) {
+        if (segX != segY) return true;
+        if (pos == 0 && getSegment(segX + 1, segY + 1) == null) return false;
+        if (pos == 4 && getSegment(segX - 1, segY - 1) == null) return false;
         return true;
     }
     

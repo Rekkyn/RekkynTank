@@ -3,8 +3,6 @@ package rekkyn.tank.skeleton;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Polygon;
 
-import rekkyn.tank.skeleton.Skeleton.ElementType;
-
 public class Segment {
     
     public int x, y;
@@ -20,94 +18,20 @@ public class Segment {
         }
     }
     
-    public Segment addElement(Element e, int location) {
-        if (this instanceof Heart) {
-            System.err.println("You can't add elements to hearts.");
-            return this;
-        }
-        
-        if (e.type == ElementType.CENTRE && location != 8 || e.type == ElementType.EDGE && location == 8) {
-            System.err.println("Invalid placement for element: " + e.toString());
-            return this;
-        }
-        
-        if (location == 8) {
-            if (!(elements[8] instanceof BlankElement)) {
-                System.err.println("Tried to put an element in a taken spot;");
-                return this;
-            }
-            
-            elements[8] = e;
-            return this;
-            
-        } else {
-            int left = location - 1;
-            while (left < 0)
-                left += 8;
-            int leftTwo = location - 2;
-            while (leftTwo < 0)
-                leftTwo += 8;
-            int right = location + 1;
-            while (right > 7)
-                right -= 8;
-            
-            if (!(elements[location] instanceof BlankElement) || !(elements[left] instanceof BlankElement)) {
-                System.err.println("Tried to put an element in a taken spot;");
-                return this;
-            }
-            
-            boolean sameRight = elements[right].getClass().equals(e.getClass());
-            boolean sameLeft = elements[leftTwo].getClass().equals(e.getClass());
-            
-            if (sameRight && sameLeft) {
-                e = elements[right];
-                if (!(elements[right] == elements[leftTwo])) {
-                    removeElement(leftTwo);
-                    addElement(e, leftTwo);
-                }
-            } else {
-                if (sameRight) {
-                    e = elements[right];
-                }
-                if (sameLeft) {
-                    e = elements[leftTwo];
-                }
-            }
-            
-            elements[location] = elements[left] = e;
-            e.locations.add(new int[] { x, y, location });
-            e.locations.add(new int[] { x, y, left });
+    public Segment addMotor() {
+        skeleton.addElement(new Motor(this), x, y, 8);
+        if (x != y) {
+            Segment s = skeleton.getSegment(y, x);
+            skeleton.addElement(new Motor(s), s.x, s.y, 8);
         }
         return this;
     }
     
     public Segment removeElement(int pos) {
-        if (!(elements[pos] instanceof BlankElement)) {
-            for (int[] locations : elements[pos].locations) {
-                skeleton.getSegment(locations[0], locations[1]).elements[locations[2]] = new BlankElement();
-            }
-        }
-        int left = pos - 1;
-        while (left < 0)
-            left += 8;
-        
-        if (!(elements[left] instanceof BlankElement)) {
-            for (int[] locations : elements[left].locations) {
-                skeleton.getSegment(locations[0], locations[1]).elements[locations[2]] = new BlankElement();
-            }
-        }
+        elements[pos] = new BlankElement();
         return this;
     }
-    
-    public Segment addMotor(boolean mirror) {
-        addElement(new Motor(this), 8);
-        if (mirror && x != y) {
-            Segment s = skeleton.getSegment(y, x);
-            s.addElement(new Motor(s), 8);
-        }
-        return this;
-    }
-    
+
     public void render(Graphics g) {
         for (int i = 0; i <= 8; i++) {
             if (!(elements[i] instanceof BlankElement)) {
