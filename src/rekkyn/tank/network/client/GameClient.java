@@ -3,6 +3,7 @@ package rekkyn.tank.network.client;
 import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.NetworkManager;
 import rekkyn.tank.network.NetworkManager.Login;
+import rekkyn.tank.skeleton.Skeleton;
 
 import com.esotericsoftware.kryonet.Client;
 
@@ -11,7 +12,7 @@ public class GameClient {
     
     public static ClientListener listener;
     
-    public GameClient(String name, GameWorld world) {
+    public GameClient(String name, GameWorld world, Skeleton skeleton) {
         world.client = this;
         client = new Client(8192, 64 * 1024);
         client.start();
@@ -29,6 +30,7 @@ public class GameClient {
         
         Login login = new Login();
         login.name = name;
+        login.skeleton = skeleton;
         client.sendTCP(login);
         
     }

@@ -6,6 +6,7 @@ import rekkyn.tank.Entity;
 import rekkyn.tank.GameWorld;
 import rekkyn.tank.network.*;
 import rekkyn.tank.network.NetworkManager.AddEntity;
+import rekkyn.tank.skeleton.Skeleton;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Server;
@@ -15,9 +16,9 @@ public class GameServer {
     public User host;
     public static ServerListener listener;
     
-    public GameServer(String name, GameWorld world) {
+    public GameServer(String name, GameWorld world, Skeleton skeleton) {
         world.server = this;
-        host = new User(name);
+        host = new User(name, skeleton);
         
         server = new Server(16384, 128 * 1024) {
             @Override

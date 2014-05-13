@@ -3,6 +3,8 @@ package rekkyn.tank;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.skeleton.Skeleton;
+
 public class Game extends StateBasedGame {
     
     static AppGameContainer appgc;
@@ -15,6 +17,8 @@ public class Game extends StateBasedGame {
     public static int height = 600;
     
     public GameWorld world = new GameWorld();
+    
+    public Skeleton skeleton = new Skeleton();
     
     public Game(String name) {
         super(name);
@@ -41,7 +45,7 @@ public class Game extends StateBasedGame {
     public void initStatesList(GameContainer container) throws SlickException {
         addState(new Menu());
         addState(world);
-        addState(new Editor());
+        addState(new Editor(skeleton));
         addState(new TestWorld());
     }
     

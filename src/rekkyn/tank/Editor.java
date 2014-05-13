@@ -25,11 +25,12 @@ public class Editor extends BasicGameState {
     
     public int selected = 1;
     
+    public Editor(Skeleton skeleton) {
+        this.skeleton = skeleton;
+    }
+    
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
-        skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(1, 2);
-        skeleton.getSegment(0, 2).addMotor();
-        skeleton.addElement(new Mouth(), 2, 2, 1);
         camera.zoom = 30;
     }
     
@@ -74,6 +75,9 @@ public class Editor extends BasicGameState {
             TestWorld testWorld = (TestWorld) game.getState(Game.TESTWORLD);
             testWorld.addTestCreatrue(skeleton);
             game.enterState(Game.TESTWORLD);
+        }
+        if (input.isKeyPressed(Input.KEY_ESCAPE)) {
+            game.enterState(Game.MENU);
         }
         
         if (input.isKeyPressed(Input.KEY_1)) {

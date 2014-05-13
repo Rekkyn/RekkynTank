@@ -18,15 +18,16 @@ public class Creature extends Entity {
     
     public Creature(float x, float y, GameWorld world, Skeleton skeleton) {
         super(x, y, world);
-        this.skeleton = skeleton;
-        skeleton.creature = this;
+        if (skeleton != null) {
+            this.skeleton = skeleton;
+            skeleton.creature = this;
+        }
     }
     
     public Creature(float x, float y, GameWorld world) {
         this(x, y, world, null);
     }
     
-    @SuppressWarnings("deprecation")
     @Override
     public void init() {
         super.init();

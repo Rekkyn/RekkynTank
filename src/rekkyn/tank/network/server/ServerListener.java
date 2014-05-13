@@ -68,7 +68,7 @@ public class ServerListener extends Listener {
                 }
             }
             
-            user = new User(name);
+            user = new User(name, ((Login) o).skeleton);
             
             loggedIn(connection, user);
             c.sendTCP(lr);

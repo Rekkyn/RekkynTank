@@ -44,10 +44,12 @@ public class NetworkManager {
         kryo.register(Input.class);
         kryo.register(HashSet.class);
         kryo.register(boolean[].class);
+        kryo.register(int[].class);
     }
     
     public static class Login {
         public String name;
+        public Skeleton skeleton;
     }
     
     public static class LoginResult {

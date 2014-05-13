@@ -145,6 +145,7 @@ public class GameWorld extends BasicGameState {
                     sendInput.down[key] = true;
                 }
             }
+            System.out.println("INPUT");
             client.client.sendTCP(sendInput);
         }
         
@@ -318,7 +319,7 @@ public class GameWorld extends BasicGameState {
     
     public void addPlayer(User user) {
         if (server != null) {
-            Creature player = new Creature(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this);
+            Creature player = new Creature(rand.nextFloat() * 50 - 25, rand.nextFloat() * 50 - 25, this, user.skeleton);
             player.angle = (float) (rand.nextFloat() * 2F * Math.PI);
             player.init();
             try {

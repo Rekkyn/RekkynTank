@@ -323,7 +323,8 @@ public class Skeleton {
         CENTRE
     }
     
-    @Deprecated
-    public Skeleton() {}
+    public Skeleton() {
+        segments.add(new Heart(0, 0, this));
+    }
     
 }
