@@ -72,41 +72,51 @@ public class Skeleton {
     }
     
     public Skeleton addElementAtLocation(Element e, int[][] locations, boolean mirror) {
-        Segment seg1 = getSegment(locations[0][0], locations[0][1]);
-        Segment seg2 = getSegment(locations[1][0], locations[1][1]);
-        int pos1 = locations[0][2];
-        int pos2 = locations[1][2];
-        if (seg1 instanceof Heart || seg2 instanceof Heart) {
+        int rightNum = locations[2][0];
+        int leftNum = rightNum == 0 ? 1 : 0;
+        Segment segRight = getSegment(locations[rightNum][0], locations[rightNum][1]);
+        Segment segLeft = getSegment(locations[leftNum][0], locations[leftNum][1]);
+        int posRight = locations[rightNum][2];
+        int posLeft = locations[leftNum][2];
+        if (segRight instanceof Heart || segLeft instanceof Heart) {
             System.err.println("You can't add elements to hearts.");
             return this;
         }
         
         
-        if (!(seg1.elements[pos1] instanceof BlankElement) || !(seg2.elements[pos2] instanceof BlankElement)) {
+        if (!(segRight.elements[posRight] instanceof BlankElement) || !(segLeft.elements[posLeft] instanceof BlankElement)) {
             System.err.println("Tried to put an element in a taken spot;");
             return this;
         }
         
-        int[] leftOfPos1 = getLocationToLeft(locations[0][0], locations[0][1], locations[0][2]);
-        int[] leftOfPos2 = getLocationToLeft(locations[1][0], locations[1][1], locations[1][2]);
+        int[] left = getLocationToLeft(locations[leftNum][0], locations[leftNum][1], locations[leftNum][2]);
+        Element leftElement = getSegment(left[0], left[1]).elements[left[2]];
+        int[] right = getLocationToRight(locations[rightNum][0], locations[rightNum][1], locations[rightNum][2]);
+        Element rightElement = getSegment(right[0], right[1]).elements[right[2]];
         
-        /*boolean sameRight = elements[right].getClass().equals(e.getClass());
-        boolean sameLeft = elements[leftTwo].getClass().equals(e.getClass());
+        System.out.println("------------------------------------------------");
+        System.out.println(e + "      " + leftElement + "        " + rightElement);
+        
+        boolean sameRight = rightElement.getClass().equals(e.getClass());
+        boolean sameLeft = leftElement.getClass().equals(e.getClass());
         
         if (sameRight && sameLeft) {
-            e = elements[right];
-            if (!(elements[right] == elements[leftTwo])) {
-                removeElement(leftTwo);
-                addElement(e, leftTwo);
+            e = rightElement;
+            if (!(rightElement == leftElement)) {
+                List<int[]> leftLocations = leftElement.locations;
+                for (int[] loc : leftLocations) {
+                    getSegment(loc[0], loc[1]).elements[loc[2]] = e;
+                    e.locations.add(loc);
+                }
             }
         } else {
             if (sameRight) {
-                e = elements[right];
+                e = rightElement;
             }
             if (sameLeft) {
-                e = elements[leftTwo];
+                e = leftElement;
             }
-        }*/
+        }
         
         getSegment(locations[0][0], locations[0][1]).elements[locations[0][2]] = e;
         getSegment(locations[1][0], locations[1][1]).elements[locations[1][2]] = e;
@@ -124,8 +134,8 @@ public class Skeleton {
                 e1.printStackTrace();
             }
             
-            addElementAtLocation(e2, new int[][] { { locations[0][1], locations[0][0], 7 - locations[0][2] },
-                    { locations[1][1], locations[1][0], 7 - locations[1][2] } }, false);
+            addElementAtLocation(e2, new int[][] { { locations[leftNum][1], locations[leftNum][0], 7 - locations[leftNum][2] },
+                    { locations[rightNum][1], locations[rightNum][0], 7 - locations[rightNum][2] }, { leftNum } }, false);
         }
         return this;
     }
@@ -142,20 +152,14 @@ public class Skeleton {
         while (left < 0)
             left += 8;
         
-        if (pos == 1 && getSegment(segX + 1, segY) == null) {
-            result = new int[][] { { segX, segY, 0 }, { segX, segY, 1 } };
-        } else if (pos == 3 && getSegment(segX, segY - 1) == null) {
-            result = new int[][] { { segX, segY, 2 }, { segX, segY, 3 } };
-        } else if (pos == 5 && getSegment(segX - 1, segY) == null) {
-            result = new int[][] { { segX, segY, 4 }, { segX, segY, 5 } };
-        } else if (pos == 7 && getSegment(segX, segY + 1) == null) {
-            result = new int[][] { { segX, segY, 6 }, { segX, segY, 7 } };
+        if ((pos + 1) % 2 == 0 && onEdge(segX, segY, pos)) {
+            result = new int[][] { { segX, segY, pos - 1 }, { segX, segY, pos }, { 1 } };
         } else if (pos % 2 == 0) {
             double[] angles = new double[] { Math.PI / 4, 0, -Math.PI / 4, 0, -3 * Math.PI / 4, 0, 3 * Math.PI / 4 };
             if (angle < angles[pos] && onEdge(segX, segY, pos)) {
-                result = new int[][] { { segX, segY, pos }, getLocationToLeft(segX, segY, pos) };
+                result = new int[][] { { segX, segY, pos }, getLocationToLeft(segX, segY, pos), { 0 } };
             } else if (onEdge(segX, segY, left)) {
-                result = new int[][] { { segX, segY, left }, getLocationToRight(segX, segY, left) };
+                result = new int[][] { { segX, segY, left }, getLocationToRight(segX, segY, left), { 1 } };
             }
         }
         return result;
@@ -166,7 +170,7 @@ public class Skeleton {
         int[][] locations = getLocationsToAdd(segX, segY, pos, angle);
         
         if (locations == null) return this;
-
+        
         Segment seg1 = getSegment(locations[0][0], locations[0][1]);
         Segment seg2 = getSegment(locations[1][0], locations[1][1]);
         int pos1 = locations[0][2];
