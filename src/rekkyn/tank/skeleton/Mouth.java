@@ -8,7 +8,7 @@ import rekkyn.tank.skeleton.Skeleton.ElementType;
 public class Mouth extends Element {
     
     public int cooldown = 0;
-    public int cooldownLength = 180;
+    public int cooldownLength = 70;
     
     public Mouth() {
         type = ElementType.EDGE;

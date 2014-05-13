@@ -1,5 +1,8 @@
 package rekkyn.tank;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.jbox2d.collision.shapes.PolygonShape;
 import org.jbox2d.common.Vec2;
 import org.newdawn.slick.*;
@@ -10,6 +13,8 @@ import rekkyn.tank.skeleton.*;
 public class Creature extends Entity {
     
     public Skeleton skeleton = new Skeleton(this);
+    
+    public List<Element> updatedElements = new ArrayList<Element>();
     
     public Creature(float x, float y, GameWorld world, Skeleton skeleton) {
         super(x, y, world);
@@ -40,11 +45,13 @@ public class Creature extends Entity {
         super.update();
         for (Segment s : skeleton.segments) {
             for (Element e : s.elements) {
-                if (e != null) {
+                if (e != null && !updatedElements.contains(e)) {
                     e.update(this);
+                    updatedElements.add(e);
                 }
             }
         }
+        updatedElements.clear();
     }
     
     public Vec2 getPosOnBody(int x, int y) {

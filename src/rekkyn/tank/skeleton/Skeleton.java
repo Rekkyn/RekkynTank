@@ -94,9 +94,6 @@ public class Skeleton {
         int[] right = getLocationToRight(locations[rightNum][0], locations[rightNum][1], locations[rightNum][2]);
         Element rightElement = getSegment(right[0], right[1]).elements[right[2]];
         
-        System.out.println("------------------------------------------------");
-        System.out.println(e + "      " + leftElement + "        " + rightElement);
-        
         boolean sameRight = rightElement.getClass().equals(e.getClass());
         boolean sameLeft = leftElement.getClass().equals(e.getClass());
         

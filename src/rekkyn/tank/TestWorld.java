@@ -118,4 +118,9 @@ public class TestWorld extends GameWorld {
         c.angle = (float) (Math.PI / 2);
         add(c);
     }
+    
+    @Override
+    public void mouseWheelMoved(int change) {
+        camera.zoom *= 1F + 0.002 * change / 120F;
+    }
 }
