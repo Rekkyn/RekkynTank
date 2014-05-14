@@ -18,9 +18,9 @@ public class Segment {
         }
     }
     
-    public Segment addMotor() {
+    public Segment addMotor(boolean mirror) {
         skeleton.addElement(new Motor(this), x, y, 8);
-        if (x != y) {
+        if (x != y && mirror) {
             Segment s = skeleton.getSegment(y, x);
             skeleton.addElement(new Motor(s), s.x, s.y, 8);
         }
@@ -31,7 +31,7 @@ public class Segment {
         elements[pos] = new BlankElement();
         return this;
     }
-
+    
     public void render(Graphics g) {
         for (int i = 0; i <= 8; i++) {
             if (!(elements[i] instanceof BlankElement)) {

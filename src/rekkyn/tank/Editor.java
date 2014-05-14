@@ -24,6 +24,7 @@ public class Editor extends BasicGameState {
     int cooldown = 20;
     
     public int selected = 1;
+    public boolean symmetry = true;
     
     public Editor(Skeleton skeleton) {
         this.skeleton = skeleton;
@@ -88,6 +89,10 @@ public class Editor extends BasicGameState {
         }
         if (input.isKeyPressed(Input.KEY_3)) {
             selected = 3;
+        }
+        
+        if (input.isKeyPressed(Input.KEY_M)) {
+            symmetry = !symmetry;
         }
         
         Iterator<Entry<Segment, Object[]>> it = cooldowns.entrySet().iterator();
@@ -213,13 +218,13 @@ public class Editor extends BasicGameState {
                 g.setColor(Colours.getAccent());
                 g.setLineWidth(2);
                 g.drawRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
-                if (mouseX != mouseY) g.drawRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
+                if (mouseX != mouseY && symmetry) g.drawRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
             }
             
             // remove segment
             if (overSegment && input.isMousePressed(Input.MOUSE_RIGHT_BUTTON) && !(segment instanceof Heart)) {
                 cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { 0, false });
-                if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { 0, false });
+                if (mouseX != mouseY && symmetry) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { 0, false });
                 skeleton.removeSegment(mouseX, mouseY);
             }
             
@@ -230,11 +235,12 @@ public class Editor extends BasicGameState {
                 col.a = 0.5F;
                 g.setColor(col);
                 g.fillRect(mouseX - 0.5F, -mouseY - 0.5F, 1, 1);
-                if (mouseX != mouseY) g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
+                if (mouseX != mouseY && symmetry) g.fillRect(mouseY - 0.5F, -mouseX - 0.5F, 1, 1);
                 
                 if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
                     cooldowns.put(new Segment(mouseX, mouseY, skeleton), new Object[] { cooldown, true });
-                    if (mouseX != mouseY) cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { cooldown, true });
+                    if (mouseX != mouseY && symmetry)
+                        cooldowns.put(new Segment(mouseY, mouseX, skeleton), new Object[] { cooldown, true });
                 }
             }
         } else if (selected == 2) {
@@ -246,7 +252,7 @@ public class Editor extends BasicGameState {
                     motor.render(g);
                     g.popTransform();
                     
-                    if (mouseX != mouseY) {
+                    if (mouseX != mouseY && symmetry) {
                         g.pushTransform();
                         g.translate(mouseY, -mouseX);
                         motor.render(g);
@@ -254,16 +260,16 @@ public class Editor extends BasicGameState {
                     }
                     
                     if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                        segment.addMotor();
+                        segment.addMotor(symmetry);
                     }
                 } else {
                     g.setColor(Colours.getAccent());
                     g.setLineWidth(2);
                     g.drawRect(mouseX - 0.25F, -mouseY - 0.25F, 0.5F, 0.5F);
-                    if (mouseX != mouseY) g.drawRect(mouseY - 0.25F, -mouseX - 0.25F, 0.5F, 0.5F);
+                    if (mouseX != mouseY && symmetry) g.drawRect(mouseY - 0.25F, -mouseX - 0.25F, 0.5F, 0.5F);
                     if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
                         segment.removeElement(8);
-                        if (mouseX != mouseY) skeleton.getSegment(mouseY, mouseX).removeElement(8);
+                        if (mouseX != mouseY && symmetry) skeleton.getSegment(mouseY, mouseX).removeElement(8);
                     }
                 }
             } else {
@@ -328,7 +334,7 @@ public class Editor extends BasicGameState {
                 skeleton.getSegment(locations[1][0], locations[1][1]).renderElement(locations[1][2], g);
                 g.popTransform();
                 
-                if (mirror) {
+                if (mirror && symmetry) {
                     g.pushTransform();
                     g.translate(locations[0][1], -locations[0][0]);
                     skeleton.getSegment(locations[0][1], locations[0][0]).renderElement(7 - locations[0][2], g);
@@ -340,12 +346,12 @@ public class Editor extends BasicGameState {
                 }
                 
                 if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                    skeleton.addElementAtLocation(new Mouth(), locations, mirror);
+                    skeleton.addElementAtLocation(new Mouth(), locations, mirror && symmetry);
                 }
             }
             
             if (input.isMousePressed(Input.MOUSE_RIGHT_BUTTON)) {
-                skeleton.removeElement(mouseX, mouseY, pos, angle, mirror);
+                skeleton.removeElement(mouseX, mouseY, pos, angle, mirror && symmetry);
             }
         }
         g.popTransform();
