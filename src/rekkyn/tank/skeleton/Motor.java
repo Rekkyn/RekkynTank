@@ -31,7 +31,8 @@ public class Motor extends Element {
         Vec2 force = new Vec2((float) (Math.cos(c.angle) * power), (float) (Math.sin(c.angle) * power));
         
         Vec2 pos = c.body.getWorldPoint(c.getPosOnBody(segment.x, segment.y));
-        c.body.applyForce(force, pos);
+        if (c.world.client == null)
+            c.body.applyForce(force, pos);
         
         if (power != 0 && c.world.rand.nextInt(5) == 0) {
             Particle p = c.world.spawnParticle(pos.x, pos.y, Colours.getDark(), 60, 0.125F);

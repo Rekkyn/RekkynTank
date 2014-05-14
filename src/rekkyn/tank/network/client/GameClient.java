@@ -23,7 +23,7 @@ public class GameClient {
         client.addListener(listener);
         
         try {
-            client.connect(5000, "24.207.67.56", NetworkManager.port);
+            client.connect(5000, "127.0.0.1", NetworkManager.port);
         } catch (Exception e) {
             e.printStackTrace();
         }

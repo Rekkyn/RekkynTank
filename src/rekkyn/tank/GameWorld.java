@@ -85,7 +85,7 @@ public class GameWorld extends BasicGameState {
         
         Object o;
         while ((o = process.poll()) != null) {
-            process(o, container);
+            process(o);
         }
         
         // SERVER THINGS
@@ -145,7 +145,6 @@ public class GameWorld extends BasicGameState {
                     sendInput.down[key] = true;
                 }
             }
-            System.out.println("INPUT");
             client.client.sendTCP(sendInput);
         }
         
@@ -166,7 +165,7 @@ public class GameWorld extends BasicGameState {
         }
     }
     
-    protected void process(Object o, GameContainer container) {
+    protected void process(Object o) {
         if (o instanceof AddEntity) {
             EntityData data = ((AddEntity) o).data;
             
@@ -188,13 +187,13 @@ public class GameWorld extends BasicGameState {
                 entities.get(data.id).setData(data);
             }
         } else if (o instanceof SendInput) {
-            processInput((SendInput) o, container);
+            processInput((SendInput) o);
         } else if (o instanceof Entity) {
             add((Entity) o);
         }
     }
     
-    private void processInput(SendInput sendInput, GameContainer container) {
+    private void processInput(SendInput sendInput) {
         
         if (sendInput.mousePressed[Input.MOUSE_LEFT_BUTTON]) {
             add(new Wall(sendInput.mousePos.x, sendInput.mousePos.y, 1, 1, this));

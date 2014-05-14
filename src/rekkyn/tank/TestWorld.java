@@ -44,7 +44,7 @@ public class TestWorld extends GameWorld {
         
         Object o;
         while ((o = process.poll()) != null) {
-            process(o, container);
+            process(o);
         }
         
         if (input.isKeyPressed(Input.KEY_T)) {
