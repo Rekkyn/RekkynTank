@@ -32,6 +32,7 @@ public abstract class Entity {
     public static World physicsWorld;
     
     public EntityData sentData;
+    public boolean shouldSend = true;
     
     public boolean init = false;
     

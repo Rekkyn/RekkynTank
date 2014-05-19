@@ -95,7 +95,7 @@ public class GameWorld extends BasicGameState {
                 Map.Entry pairs = (Map.Entry) it.next();
                 Entity ent = (Entity) pairs.getValue();
                 
-                if (!(ent instanceof Particle)) {
+                if (ent.shouldSend) {
                     EntityData data = ent.getData();
                     if (!data.equals(ent.sentData)) {
                         server.server.sendToAllTCP(data);
@@ -287,7 +287,7 @@ public class GameWorld extends BasicGameState {
         if (!entity.init) entity.init();
         entities.put(id, entity);
         
-        if (server != null && !(entity instanceof Particle)) {
+        if (server != null && entity.shouldSend) {
             server.server.sendToAllTCP(server.addEntity(entity));
         }
     }

@@ -20,6 +20,7 @@ public class Particle extends Entity {
         colour.a = alpha;
         ageDecay = age;
         this.radius = radius;
+        shouldSend = false;
     }
     
     @Override
