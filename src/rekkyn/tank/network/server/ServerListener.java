@@ -109,8 +109,7 @@ public class ServerListener extends Listener {
             Map.Entry pairs = (Map.Entry) it.next();
             
             Entity e = (Entity) pairs.getValue();
-            if (e.shouldSend)
-                c.sendTCP(gameServer.addEntity(e));
+            if (e.shouldSend) c.sendTCP(gameServer.addEntity(e));
         }
     }
     

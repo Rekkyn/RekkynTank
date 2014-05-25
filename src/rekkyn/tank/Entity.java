@@ -116,7 +116,9 @@ public abstract class Entity {
         x = data.x;
         y = data.y;
         angle = data.angle;
+        body.setTransform(new Vec2(x, y), angle);
         velocity = data.velocity;
+        body.setLinearVelocity(velocity);
         removed = data.removed;
         setSpecificData(data.specificData);
         

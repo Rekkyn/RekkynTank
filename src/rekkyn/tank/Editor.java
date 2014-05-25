@@ -26,6 +26,8 @@ public class Editor extends BasicGameState {
     public int selected = 1;
     public boolean symmetry = true;
     
+    public Map<int[], Boolean> connected = new HashMap<int[], Boolean>();
+    
     public Editor(Skeleton skeleton) {
         this.skeleton = skeleton;
     }
@@ -33,6 +35,7 @@ public class Editor extends BasicGameState {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         camera.zoom = 30;
+        checkConnections();
     }
     
     @Override
@@ -115,6 +118,7 @@ public class Editor extends BasicGameState {
                 }
             }
         }
+        checkConnections();
     }
     
     @Override
@@ -173,7 +177,9 @@ public class Editor extends BasicGameState {
         // shadows
         for (Segment s : skeleton.segments) {
             g.setColor(Colours.getShadow());
-            g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, 1);
+            if (getConnectedAt(s.x, s.y)) { // not implemented at the moment
+                g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, 1);
+            }
         }
         
         drawCompletingSegments(g);
@@ -181,11 +187,16 @@ public class Editor extends BasicGameState {
         
         // body
         for (Segment s : skeleton.segments) {
+            Color col;
             if (s instanceof Heart) {
-                g.setColor(Colours.getAccent());
+                col = Colours.getAccent();
             } else {
-                g.setColor(Colours.getBody());
+                col = Colours.getBody();
             }
+            if (!getConnectedAt(s.x, s.y)) { // not implemented at the moment
+                col.a = 0.25F;
+            }
+            g.setColor(col);
             g.fillRect(s.x - 0.5F, -s.y - 0.5F, 1, 1);
             g.pushTransform();
             g.translate(s.x, -s.y);
@@ -291,7 +302,6 @@ public class Editor extends BasicGameState {
             final float angle7 = (float) (Math.atan(2F) - Math.PI);
             final float angle8 = (float) (Math.atan(0.5F) - Math.PI);
             
-            
             if (angle > angle1 && angle < angle2) {
                 pos = 0;
             }
@@ -318,7 +328,6 @@ public class Editor extends BasicGameState {
             }
             
             boolean mirror = skeleton.shouldMirror(mouseX, mouseY, pos);
-            int mirrorPos = 8 - pos < 8 ? 8 - pos : 0;
             int[][] locations = skeleton.getLocationsToAdd(mouseX, mouseY, pos, angle);
             
             if (locations != null) {
@@ -357,12 +366,73 @@ public class Editor extends BasicGameState {
         g.popTransform();
     }
     
+    private void checkConnections() {
+        connected.clear();
+        connected.put(new int[] { 0, 0 }, true);
+        
+        boolean go;
+        do {
+            go = false;
+            for (Segment s : skeleton.segments) {
+                boolean skip = false;
+                Iterator<Entry<int[], Boolean>> it = connected.entrySet().iterator();
+                while (it.hasNext()) {
+                    Entry<int[], Boolean> pairs = it.next();
+                    int[] i = pairs.getKey();
+                    if (s.x == i[0] && s.y == i[1]) {
+                        skip = pairs.getValue();
+                    }
+                }
+                if (skip) continue;
+                
+                int[][] pos = new int[][] { { s.x + 1, s.y }, { s.x + 1, s.y + 1 }, { s.x, s.y + 1 }, { s.x - 1, s.y + 1 },
+                        { s.x - 1, s.y }, { s.x - 1, s.y - 1 }, { s.x, s.y - 1 }, { s.x + 1, s.y - 1 } };
+                boolean isConnected = false;
+                for (int i = 0; i < 8; i++) {
+                    int x = pos[i][0];
+                    int y = pos[i][1];
+                    if (skeleton.getSegment(x, y) != null && getConnectedAt(x, y)) {
+                        isConnected = true;
+                        go = true;
+                        break;
+                    }
+                }
+                Iterator<Entry<int[], Boolean>> it1 = connected.entrySet().iterator();
+                while (it1.hasNext()) {
+                    Entry<int[], Boolean> pairs = it1.next();
+                    int[] i = pairs.getKey();
+                    if (s.x == i[0] && s.y == i[1]) it1.remove();
+                }
+                connected.put(new int[] { s.x, s.y }, isConnected);
+            }
+        } while (go);
+        
+        Iterator<Entry<int[], Boolean>> it1 = connected.entrySet().iterator();
+        while (it1.hasNext()) {
+            Entry<int[], Boolean> pairs = it1.next();
+            int[] i = pairs.getKey();
+            if (!pairs.getValue()) {
+                skeleton.removeSegment(i[0], i[1]);
+            }
+        }
+    }
+    
+    private boolean getConnectedAt(int x, int y) {
+        Iterator<Entry<int[], Boolean>> it = connected.entrySet().iterator();
+        while (it.hasNext()) {
+            Entry<int[], Boolean> pairs = it.next();
+            int[] i = pairs.getKey();
+            if (x == i[0] && y == i[1]) return pairs.getValue();
+        }
+        return false;
+    }
+    
     public void drawCompletingSegments(Graphics g) {
         Iterator<Entry<Segment, Object[]>> it1 = cooldowns.entrySet().iterator();
         while (it1.hasNext()) {
-            Map.Entry pairs = it1.next();
-            Segment s = (Segment) pairs.getKey();
-            Integer cool = (Integer) ((Object[]) pairs.getValue())[0];
+            Entry<Segment, Object[]> pairs = it1.next();
+            Segment s = pairs.getKey();
+            Integer cool = (Integer) pairs.getValue()[0];
             boolean[] bool = getNeighbours(s.x, s.y);
             if (bool[1]) {
                 g.fillRect(s.x - 0.5F, -s.y - 0.5F, (float) -cool / cooldown + 1, 1);
@@ -396,7 +466,6 @@ public class Editor extends BasicGameState {
             }
         }
     }
-    
     
     public Vec2 mousePos(GameContainer container) {
         Input input = container.getInput();

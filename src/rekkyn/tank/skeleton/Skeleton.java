@@ -83,7 +83,6 @@ public class Skeleton {
             return this;
         }
         
-        
         if (!(segRight.elements[posRight] instanceof BlankElement) || !(segLeft.elements[posLeft] instanceof BlankElement)) {
             System.err.println("Tried to put an element in a taken spot;");
             return this;
