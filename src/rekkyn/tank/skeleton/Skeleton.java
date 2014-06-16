@@ -326,4 +326,12 @@ public class Skeleton {
         segments.add(new Heart(0, 0, this));
     }
     
+    public static Skeleton defaultSkeleton() {
+        Skeleton skeleton = new Skeleton();
+        skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(1, 2);
+        skeleton.getSegment(0, 2).addMotor(true);
+        skeleton.addElement(new Mouth(), 2, 2, 1);
+        return skeleton;
+    }
+
 }

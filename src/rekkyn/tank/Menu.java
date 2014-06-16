@@ -8,7 +8,6 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.network.client.GameClient;
 import rekkyn.tank.network.server.GameServer;
-import rekkyn.tank.skeleton.Mouth;
 
 public class Menu extends BasicGameState {
     
@@ -21,9 +20,6 @@ public class Menu extends BasicGameState {
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
-        ((Game) game).skeleton.addSegment(1, 1).addSegment(2, 2).addSegment(0, 2).addSegment(1, 2);
-        ((Game) game).skeleton.getSegment(0, 2).addMotor(true);
-        ((Game) game).skeleton.addElement(new Mouth(), 2, 2, 1);
     }
     
     @Override
@@ -34,8 +30,7 @@ public class Menu extends BasicGameState {
         if (i == 3) {
             game.enterState(Game.EDITOR);
             return;
-        }
-        if (i == 0) {
+        } else if (i == 0) {
             System.out.println("Please enter your username:");
             String name = s.next();
             GameServer server = new GameServer(name, ((Game) game).world, ((Game) game).skeleton);
@@ -43,6 +38,9 @@ public class Menu extends BasicGameState {
             System.out.println("Please enter your username:");
             String name = s.next();
             GameClient client = new GameClient(name, ((Game) game).world, ((Game) game).skeleton);
+        } else if (i == 9) {
+            game.enterState(Game.AIWORLD);
+            return;
         }
         game.enterState(Game.WORLD);
     }

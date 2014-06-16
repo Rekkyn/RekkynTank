@@ -14,6 +14,9 @@ public class Creature extends Entity {
     
     public Skeleton skeleton = new Skeleton(this);
     
+    public float rightPower, leftPower;
+    public static final float MAXPOWER = 80;
+    
     public List<Element> updatedElements = new ArrayList<Element>();
     
     public Creature(float x, float y, GameWorld world, Skeleton skeleton) {
@@ -22,6 +25,7 @@ public class Creature extends Entity {
             this.skeleton = skeleton;
             skeleton.creature = this;
         }
+        rightPower = leftPower = 0;
     }
     
     public Creature(float x, float y, GameWorld world) {
@@ -68,14 +72,15 @@ public class Creature extends Entity {
                 continue;
             
             if (s.y >= s.x) {
-                m.power = leftPower;
+                m.power = leftPower * MAXPOWER;
             }
             
             if (s.x >= s.y) {
-                m.power = rightPower;
+                m.power = rightPower * MAXPOWER;
             }
         }
-        
+        this.leftPower = leftPower;
+        this.rightPower = rightPower;
     }
     
     @Override

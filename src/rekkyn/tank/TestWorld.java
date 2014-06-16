@@ -3,7 +3,8 @@ package rekkyn.tank;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.newdawn.slick.*;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.skeleton.Skeleton;
@@ -18,7 +19,7 @@ public class TestWorld extends GameWorld {
     }
     
     @Override
-    public void tick(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+    public void tick(GameContainer container, StateBasedGame game) {
         Input input = container.getInput();
         tickCount++;
         
@@ -79,17 +80,17 @@ public class TestWorld extends GameWorld {
         float leftPower;
         float rightPower;
         if (input.isKeyDown(Input.KEY_W)) {
-            leftPower = power;
+            leftPower = 1;
         } else if (input.isKeyDown(Input.KEY_S)) {
-            leftPower = -power;
+            leftPower = -1;
         } else {
             leftPower = 0;
         }
         
         if (input.isKeyDown(Input.KEY_R)) {
-            rightPower = power;
+            rightPower = 1;
         } else if (input.isKeyDown(Input.KEY_F)) {
-            rightPower = -power;
+            rightPower = -1;
         } else {
             rightPower = 0;
         }

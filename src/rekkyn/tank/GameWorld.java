@@ -40,8 +40,6 @@ public class GameWorld extends BasicGameState {
     
     Camera camera = new Camera();
     
-    float power = 80;
-    
     public GameWorld() {}
     
     @Override
@@ -52,14 +50,14 @@ public class GameWorld extends BasicGameState {
         
         while (accumulator >= TIMESTEP) {
             // if (container.hasFocus()) {
-            tick(container, game, delta);
+            tick(container, game);
             // }
             accumulator -= TIMESTEP;
         }
         partialTicks = accumulator / TIMESTEP;
     }
     
-    public void tick(GameContainer container, StateBasedGame game, int delta) throws SlickException {
+    public void tick(GameContainer container, StateBasedGame game) {
         Input input = container.getInput();
         tickCount++;
         
@@ -109,17 +107,17 @@ public class GameWorld extends BasicGameState {
             float leftPower;
             float rightPower;
             if (input.isKeyDown(Input.KEY_W)) {
-                leftPower = power;
+                leftPower = 1;
             } else if (input.isKeyDown(Input.KEY_S)) {
-                leftPower = -power;
+                leftPower = -1;
             } else {
                 leftPower = 0;
             }
             
             if (input.isKeyDown(Input.KEY_R)) {
-                rightPower = power;
+                rightPower = 1;
             } else if (input.isKeyDown(Input.KEY_F)) {
-                rightPower = -power;
+                rightPower = -1;
             } else {
                 rightPower = 0;
             }
@@ -205,17 +203,17 @@ public class GameWorld extends BasicGameState {
         float leftPower;
         float rightPower;
         if (sendInput.down[Input.KEY_W]) {
-            leftPower = power;
+            leftPower = 1;
         } else if (sendInput.down[Input.KEY_S]) {
-            leftPower = -power;
+            leftPower = -1;
         } else {
             leftPower = 0;
         }
         
         if (sendInput.down[Input.KEY_R]) {
-            rightPower = power;
+            rightPower = 1;
         } else if (sendInput.down[Input.KEY_F]) {
-            rightPower = -power;
+            rightPower = -1;
         } else {
             rightPower = 0;
         }
@@ -272,7 +270,7 @@ public class GameWorld extends BasicGameState {
         }
         
         g.setColor(new Color(27, 50, 95));
-        Font.draw("FPS: " + Game.appgc.getFPS(), 20, 10, 2, g);
+        // Font.draw("FPS: " + Game.appgc.getFPS(), 20, 10, 2, g);
     }
     
     public void add(Entity entity) {
