@@ -12,14 +12,17 @@ public class FoodTest extends HyperNEATFitnessFunction {
     
     public static final String TIME = "food.time";
     public static final String TRIALS = "food.trials";
+    public static final String RANDOM = "food.random";
     public int time;
     public int trials;
+    public boolean random;
     
     @Override
     public void init(Properties props) {
         super.init(props);
         time = props.getIntProperty(TIME, 300);
         trials = props.getIntProperty(TRIALS, 5);
+        random = props.getBooleanProperty(RANDOM, false);
     }
     
     @Override
@@ -36,7 +39,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
         double fitness = 0;
         
         for (int i = 0; i < trials; i++) {
-            AIWorld world = new AIWorld(substrate, time);
+            AIWorld world = new AIWorld(substrate, time, i, trials, random);
             try {
                 world.init(null, null);
             } catch (SlickException e) {
@@ -55,7 +58,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
             }
             
             if (logImage) {
-                AIGame game = new AIGame("Food Test", substrate);
+                AIGame game = new AIGame("Food Test", substrate, time, i, trials, random);
                 
                 try {
                     AppGameContainer appgc = new AppGameContainer(game);

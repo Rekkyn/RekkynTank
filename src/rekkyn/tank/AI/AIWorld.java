@@ -3,6 +3,7 @@ package rekkyn.tank.AI;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.jbox2d.common.Vec2;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
@@ -22,15 +23,16 @@ public class AIWorld extends GameWorld {
     public double minDist = 0;
     public boolean gotFood = false;
     public int time;
+    public int trial;
+    public int maxTrials;
+    public boolean random;
     
-    public AIWorld(Activator substrate, int time) {
+    public AIWorld(Activator substrate, int time, int trial, int maxTrials, boolean random) {
         this.substrate = substrate;
         this.time = time;
-    }
-    
-    public AIWorld(Activator substrate) {
-        this.substrate = substrate;
-        time = 300;
+        this.trial = trial;
+        this.maxTrials = maxTrials;
+        this.random = random;
     }
     
     @Override
@@ -40,7 +42,12 @@ public class AIWorld extends GameWorld {
         creature.angle = (float) (Math.PI / 2);
         add(creature);
         
-        float angle = (float) (rand.nextFloat() * 2 * Math.PI);
+        float angle = 0;
+        if (random) {
+            angle = (float) (rand.nextFloat() * 2 * Math.PI);
+        } else {
+            angle = (float) (trial * (2 * Math.PI / maxTrials));
+        }
         
         food = new Food((float) Math.cos(angle) * 15, (float) Math.sin(angle) * 15, this);
         add(food);
@@ -62,19 +69,18 @@ public class AIWorld extends GameWorld {
             Input input = container.getInput();
             float leftPower;
             float rightPower;
-            float power = 80;
             if (input.isKeyDown(Input.KEY_W)) {
-                leftPower = power;
+                leftPower = 1;
             } else if (input.isKeyDown(Input.KEY_S)) {
-                leftPower = -power;
+                leftPower = -1;
             } else {
                 leftPower = 0;
             }
             
             if (input.isKeyDown(Input.KEY_R)) {
-                rightPower = power;
+                rightPower = 1;
             } else if (input.isKeyDown(Input.KEY_F)) {
-                rightPower = -power;
+                rightPower = -1;
             } else {
                 rightPower = 0;
             }
@@ -99,18 +105,22 @@ public class AIWorld extends GameWorld {
             }
         }
         
-        double[] inputs = new double[7];
-        inputs[0] = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()), (float) (Math.PI / 2)).x / 15;
-        inputs[1] = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()), (float) (Math.PI / 2)).y / 15;
-        inputs[2] = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).x / 12;
-        inputs[3] = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).y / 12;
-        inputs[4] = creature.body.m_angularVelocity;
-        inputs[5] = creature.leftPower;
-        inputs[6] = creature.rightPower;
-        
-        double[] outputs = substrate.next(inputs);
-        
-        creature.setMotors((float) outputs[0], (float) outputs[1]);
+        if (substrate != null) {
+            double[] inputs = new double[7];
+            inputs[0] = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()).add(new Vec2((float) -Math.sqrt(12.5), 0)),
+                    (float) (Math.PI / 2)).x / 10;
+            inputs[1] = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()).add(new Vec2((float) -Math.sqrt(12.5), 0)),
+                    (float) (Math.PI / 2)).y / 10;
+            inputs[2] = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).x / 10;
+            inputs[3] = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).y / 10;
+            inputs[4] = creature.body.m_angularVelocity / 5;
+            inputs[5] = creature.leftPower;
+            inputs[6] = creature.rightPower;
+            
+            double[] outputs = substrate.next(inputs);
+            
+            creature.setMotors((float) outputs[0] * 2 - 1, (float) outputs[1] * 2 - 1);
+        }
         
         if (distance(creature, food) < minDist) minDist = distance(creature, food);
         
@@ -120,7 +130,8 @@ public class AIWorld extends GameWorld {
     }
     
     public double distance(Entity e1, Entity e2) {
-        return Math.sqrt((e1.x - e2.x) * (e1.x - e2.x) + (e1.y - e2.y) * (e1.y - e2.y));
+        Vec2 e1T = e1.body.getWorldPoint(new Vec2((float) Math.sqrt(12.5), 0));
+        return Math.sqrt((e1T.x - e2.x) * (e1T.x - e2.x) + (e1T.y - e2.y) * (e1T.y - e2.y));
     }
     
     @Override

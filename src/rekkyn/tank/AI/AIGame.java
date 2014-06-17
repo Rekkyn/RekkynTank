@@ -9,19 +9,27 @@ import com.anji.integration.Activator;
 public class AIGame extends StateBasedGame {
     
     Activator substrate;
+    int time;
+    int trial;
+    int maxTrails;
+    boolean random;
     
     public AIGame(String name) {
         super(name);
     }
     
-    public AIGame(String name, Activator substrate) {
+    public AIGame(String name, Activator substrate, int time, int trial, int maxTrials, boolean random) {
         this(name);
         this.substrate = substrate;
+        this.time = time;
+        this.trial = trial;
+        maxTrails = maxTrials;
+        this.random = random;
     }
     
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-        addState(new AIWorld(substrate));
+        addState(new AIWorld(substrate, time, trial, maxTrails, random));
     }
     
 }

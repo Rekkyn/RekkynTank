@@ -49,7 +49,7 @@ public class Game extends StateBasedGame {
         addState(world);
         addState(new Editor(skeleton));
         addState(new TestWorld());
-        addState(new AIWorld(null));
+        addState(new AIWorld(null, 300, 0, 1, true));
     }
     
     public static Image scaleImage(Image image, int scale) {
