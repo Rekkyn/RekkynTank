@@ -27,9 +27,16 @@ public class AIGame extends StateBasedGame {
         this.random = random;
     }
     
+    public AIGame(String name, Activator substrate, int time) {
+        this(name);
+        this.substrate = substrate;
+        this.time = time;
+    }
+    
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
         addState(new AIWorld(substrate, time, trial, maxTrails, random));
+        // addState(new RetrieveWorld(substrate, time));
     }
     
 }

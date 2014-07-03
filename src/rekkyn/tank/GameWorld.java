@@ -38,7 +38,7 @@ public class GameWorld extends BasicGameState {
     public GameServer server;
     public GameClient client;
     
-    Camera camera = new Camera();
+    public Camera camera = new Camera();
     
     public GameWorld() {}
     

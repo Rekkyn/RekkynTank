@@ -8,24 +8,18 @@ import com.anji.integration.Activator;
 import com.ojcoleman.ahni.evaluation.HyperNEATFitnessFunction;
 import com.ojcoleman.ahni.hyperneat.Properties;
 
-public class FoodTest extends HyperNEATFitnessFunction {
+public class RetrieveTest extends HyperNEATFitnessFunction {
     
-    public static final String TIME = "food.time";
+    public static final String TIME = "retrieve.time";
     public static final String TRIALS = "food.trials";
-    public static final String RANDOM = "food.random";
-    public static final String MIN = "food.min";
     public int time;
     public int trials;
-    public boolean random;
-    public boolean min;
     
     @Override
     public void init(Properties props) {
         super.init(props);
         time = props.getIntProperty(TIME, 300);
         trials = props.getIntProperty(TRIALS, 5);
-        random = props.getBooleanProperty(RANDOM, false);
-        min = props.getBooleanProperty(MIN, true);
     }
     
     @Override
@@ -42,7 +36,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
         double fitness = 0;
         
         for (int i = 0; i < trials; i++) {
-            AIWorld world = new AIWorld(substrate, time, i, trials, random);
+            RetrieveWorld world = new RetrieveWorld(substrate, time);
             try {
                 world.init(null, null);
             } catch (SlickException e) {
@@ -54,19 +48,10 @@ public class FoodTest extends HyperNEATFitnessFunction {
                 if (world.gotFood) break;
             }
             
-            if (world.gotFood) {
-                fitness += 1D - 0.5D / time * world.tickCount;
-            } else {
-                if (min) {
-                    fitness += 0.5D - 0.5D / world.initialDist * world.minDist;
-                } else {
-                    double distance = world.distance(world.creature, world.food);
-                    fitness += Math.pow(0.954842, distance + 15);
-                }
-            }
+            fitness += Math.pow(0.926119, world.distance(world.food, world.target));
             
             if (logImage) {
-                AIGame game = new AIGame("Food Test", substrate, time, i, trials, random);
+                AIGame game = new AIGame("Retrieve Test", substrate, time);
                 
                 try {
                     AppGameContainer appgc = new AppGameContainer(game);
@@ -75,13 +60,13 @@ public class FoodTest extends HyperNEATFitnessFunction {
                     appgc.setAlwaysRender(true);
                     appgc.setForceExit(false);
                     appgc.start();
+                    game.enterState(55);
                     
                 } catch (SlickException e) {
                     e.printStackTrace();
                 }
             }
         }
-        
         
         genotype.setPerformanceValue(fitness / trials);
         return fitness / trials;
