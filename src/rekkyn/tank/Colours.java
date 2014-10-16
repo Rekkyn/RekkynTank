@@ -11,23 +11,23 @@ public class Colours {
     }
     
     public static Color getBody() {
-        return new Color(current.body.r, current.body.g, current.body.b);
+        return Util.copyColor(current.body);
     }
     
     public static Color getAccent() {
-        return new Color(current.accent.r, current.accent.g, current.accent.b);
+        return Util.copyColor(current.accent);
     }
     
     public static Color getBackground() {
-        return new Color(current.background.r, current.background.g, current.background.b);
+        return Util.copyColor(current.background);
     }
     
     public static Color getShadow() {
-        return new Color(current.shadow.r, current.shadow.g, current.shadow.b, current.shadow.a);
+        return Util.copyColor(current.shadow);
     }
     
     public static Color getDark() {
-        return new Color(current.dark.r, current.dark.g, current.dark.b);
+        return Util.copyColor(current.dark);
     }
     
     public enum ColourSets {

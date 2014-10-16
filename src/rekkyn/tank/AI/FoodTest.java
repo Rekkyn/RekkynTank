@@ -14,10 +14,12 @@ public class FoodTest extends HyperNEATFitnessFunction {
     public static final String TRIALS = "food.trials";
     public static final String RANDOM = "food.random";
     public static final String MIN = "food.min";
+    public static final String DEBUG = "food.debug";
     public int time;
     public int trials;
     public boolean random;
     public boolean min;
+    public boolean debug;
     
     @Override
     public void init(Properties props) {
@@ -26,6 +28,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
         trials = props.getIntProperty(TRIALS, 5);
         random = props.getBooleanProperty(RANDOM, false);
         min = props.getBooleanProperty(MIN, true);
+        debug = props.getBooleanProperty(DEBUG, true);
     }
     
     @Override
@@ -42,7 +45,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
         double fitness = 0;
         
         for (int i = 0; i < trials; i++) {
-            AIWorld world = new AIWorld(substrate, time, i, trials, random);
+            AIWorld world = new AIWorld(substrate, time, i, trials, random, debug);
             try {
                 world.init(null, null);
             } catch (SlickException e) {
@@ -66,7 +69,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
             }
             
             if (logImage) {
-                AIGame game = new AIGame("Food Test", substrate, time, i, trials, random);
+                AIGame game = new AIGame("Food Test", substrate, time, i, trials, random, debug);
                 
                 try {
                     AppGameContainer appgc = new AppGameContainer(game);
@@ -81,7 +84,6 @@ public class FoodTest extends HyperNEATFitnessFunction {
                 }
             }
         }
-        
         
         genotype.setPerformanceValue(fitness / trials);
         return fitness / trials;

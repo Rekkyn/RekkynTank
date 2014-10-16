@@ -93,6 +93,9 @@ public class Editor extends BasicGameState {
         if (input.isKeyPressed(Input.KEY_3)) {
             selected = 3;
         }
+        if (input.isKeyPressed(Input.KEY_4)) {
+            selected = 4;
+        }
         
         if (input.isKeyPressed(Input.KEY_M)) {
             symmetry = !symmetry;
@@ -289,7 +292,7 @@ public class Editor extends BasicGameState {
                 motor.render(g);
                 g.popTransform();
             }
-        } else if (overSegment && !(segment instanceof Heart) && selected == 3) {
+        } else if (overSegment && !(segment instanceof Heart) && (selected == 3 || selected == 4)) {
             float angle = (float) Math.atan2(mouse.y - mouseY, mouse.x - mouseX);
             int pos = 0;
             
@@ -330,8 +333,12 @@ public class Editor extends BasicGameState {
             boolean mirror = skeleton.shouldMirror(mouseX, mouseY, pos);
             int[][] locations = skeleton.getLocationsToAdd(mouseX, mouseY, pos, angle);
             
+            Element e = null;
+            if (selected == 3) e = new Mouth();
+            if (selected == 4) e = new Eye();
+            
             if (locations != null) {
-                Color col = Colours.getAccent();
+                Color col = Util.copyColor(e.colour);
                 col.a = 0.5F;
                 g.setColor(col);
                 g.pushTransform();
@@ -355,7 +362,7 @@ public class Editor extends BasicGameState {
                 }
                 
                 if (input.isMousePressed(Input.MOUSE_LEFT_BUTTON)) {
-                    skeleton.addElementAtLocation(new Mouth(), locations, mirror && symmetry);
+                    skeleton.addElementAtLocation(e, locations, mirror && symmetry);
                 }
             }
             

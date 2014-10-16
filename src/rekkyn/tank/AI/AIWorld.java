@@ -26,13 +26,20 @@ public class AIWorld extends GameWorld {
     public int trial;
     public int maxTrials;
     public boolean random;
+    public boolean debug;
     
-    public AIWorld(Activator substrate, int time, int trial, int maxTrials, boolean random) {
+    float relX, relY;
+    float velX, velY;
+    float angV;
+    float lPow, rPow;
+    
+    public AIWorld(Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug) {
         this.substrate = substrate;
         this.time = time;
         this.trial = trial;
         this.maxTrials = maxTrials;
         this.random = random;
+        this.debug = debug;
     }
     
     @Override
@@ -126,17 +133,26 @@ public class AIWorld extends GameWorld {
             }
         }
         
+        Vec2 relPos = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()).add(new Vec2((float) -Math.sqrt(12.5), 0)),
+                (float) (Math.PI / 2));
+        
+        relX = (float) (2 / (1 + Math.exp(-0.2 * relPos.x)) - 1);
+        relY = (float) (2 / (1 + Math.exp(-0.2 * relPos.y)) - 1);
+        velX = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).x / 10;
+        velY = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).y / 10;
+        angV = creature.body.m_angularVelocity / 8;
+        lPow = creature.leftPower;
+        rPow = creature.rightPower;
+        
         if (substrate != null) {
             double[] inputs = new double[7];
-            inputs[0] = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()).add(new Vec2((float) -Math.sqrt(12.5), 0)),
-                    (float) (Math.PI / 2)).x / 10;
-            inputs[1] = Util.rotateVec(creature.body.getLocalPoint(food.body.getPosition()).add(new Vec2((float) -Math.sqrt(12.5), 0)),
-                    (float) (Math.PI / 2)).y / 10;
-            inputs[2] = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).x / 10;
-            inputs[3] = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).y / 10;
-            inputs[4] = creature.body.m_angularVelocity / 5;
-            inputs[5] = creature.leftPower;
-            inputs[6] = creature.rightPower;
+            inputs[0] = relX;
+            inputs[1] = relY;
+            inputs[2] = velX;
+            inputs[3] = velY;
+            inputs[4] = angV;
+            inputs[5] = lPow;
+            inputs[6] = rPow;
             
             double[] outputs = substrate.next(inputs);
             
@@ -147,6 +163,20 @@ public class AIWorld extends GameWorld {
         
         if (container != null && tickCount > time) {
             container.exit();
+        }
+    }
+    
+    @Override
+    public void render(GameContainer container, StateBasedGame game, Graphics g) throws SlickException {
+        super.render(container, game, g);
+        if (debug) {
+            g.setColor(Color.red);
+            g.drawRect(55, 50, relX * 20, 10);
+            g.drawRect(50, 55, 10, -relY * 20);
+            g.drawRect(155, 50, velX * 20, 10);
+            g.drawRect(150, 55, 10, -velY * 20);
+            g.drawRect(250, 50, angV * 20, 10);
+            
         }
     }
     

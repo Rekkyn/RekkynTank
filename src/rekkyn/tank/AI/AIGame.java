@@ -13,18 +13,20 @@ public class AIGame extends StateBasedGame {
     int trial;
     int maxTrails;
     boolean random;
+    boolean debug;
     
     public AIGame(String name) {
         super(name);
     }
     
-    public AIGame(String name, Activator substrate, int time, int trial, int maxTrials, boolean random) {
+    public AIGame(String name, Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug) {
         this(name);
         this.substrate = substrate;
         this.time = time;
         this.trial = trial;
         maxTrails = maxTrials;
         this.random = random;
+        this.debug = debug;
     }
     
     public AIGame(String name, Activator substrate, int time) {
@@ -35,7 +37,7 @@ public class AIGame extends StateBasedGame {
     
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-        addState(new AIWorld(substrate, time, trial, maxTrails, random));
+        addState(new AIWorld(substrate, time, trial, maxTrails, random, debug));
         // addState(new RetrieveWorld(substrate, time));
     }
     
