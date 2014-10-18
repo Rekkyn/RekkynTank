@@ -9,6 +9,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.*;
 import rekkyn.tank.Game;
+import rekkyn.tank.skeleton.Mouth;
 import rekkyn.tank.skeleton.Skeleton;
 
 import com.anji.integration.Activator;
@@ -24,30 +25,38 @@ public class AIWorld extends GameWorld {
     public boolean gotFood = false;
     public int time;
     public int trial;
+    public int trialTime;
     public int maxTrials;
     public boolean random;
     public boolean debug;
+    public boolean chain;
     
     float relX, relY;
     float velX, velY;
     float angV;
     float lPow, rPow;
     
-    public AIWorld(Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug) {
+    public AIWorld(Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug, boolean chain) {
         this.substrate = substrate;
         this.time = time;
         this.trial = trial;
         this.maxTrials = maxTrials;
         this.random = random;
         this.debug = debug;
+        this.chain = chain;
     }
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         super.init(container, game);
-        creature = new Creature(0, 0, this, Skeleton.defaultSkeleton());
+        Skeleton skeleton = new Skeleton();
+        skeleton.addSegment(0, 1).addSegment(0, 2).addSegment(0, 3);
+        skeleton.getSegment(0, 2).addMotor(true);
+        skeleton.addElement(new Mouth(), 0, 3, 1);
+        creature = new Creature(0, 0, this, skeleton);
         creature.angle = (float) (Math.PI / 2);
         add(creature);
+        camera.setFollowing(creature);
         
         float angle = 0;
         if (random) {
@@ -63,9 +72,20 @@ public class AIWorld extends GameWorld {
         minDist = initialDist;
     }
     
+    public void addFood() {
+        float angle = (float) (rand.nextFloat() * 2 * Math.PI);
+        food = new Food((float) Math.cos(angle) * 15 + creature.x, (float) Math.sin(angle) * 15 + creature.y, this);
+        add(food);
+        gotFood = false;
+        initialDist = distance(creature, food);
+        minDist = initialDist;
+        trialTime = 0;
+    }
+    
     @Override
     public void tick(GameContainer container, StateBasedGame game) {
         tickCount++;
+        trialTime++;
         
         Object o;
         while ((o = process.poll()) != null) {
@@ -164,6 +184,10 @@ public class AIWorld extends GameWorld {
         if (container != null && tickCount > time) {
             container.exit();
         }
+        
+        if (container != null && chain && gotFood) {
+            addFood();
+        }
     }
     
     @Override
@@ -189,4 +213,5 @@ public class AIWorld extends GameWorld {
     public int getID() {
         return Game.AIWORLD;
     }
+    
 }
