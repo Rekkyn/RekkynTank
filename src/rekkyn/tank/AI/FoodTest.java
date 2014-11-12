@@ -58,7 +58,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
                 world.tick(null, null);
                 if (world.gotFood) {
                     if (chain) {
-                        fitness += Math.pow(0.995, world.trialTime);
+                        fitness += Math.pow(0.997, world.trialTime);
                         world.addFood();
                     } else {
                         break;

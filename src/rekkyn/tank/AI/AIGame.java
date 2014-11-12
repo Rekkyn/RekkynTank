@@ -39,8 +39,10 @@ public class AIGame extends StateBasedGame {
     
     @Override
     public void initStatesList(GameContainer container) throws SlickException {
-        addState(new AIWorld(substrate, time, trial, maxTrails, random, debug, chain));
+        // addState(new AIWorld(substrate, time, trial, maxTrails, random,
+        // debug, chain));
         // addState(new RetrieveWorld(substrate, time));
+        addState(new RoamWorld(substrate, time, debug));
     }
     
 }
