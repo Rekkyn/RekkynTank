@@ -42,7 +42,7 @@ public class AIGame extends StateBasedGame {
         // addState(new AIWorld(substrate, time, trial, maxTrails, random,
         // debug, chain));
         // addState(new RetrieveWorld(substrate, time));
-        addState(new RoamWorld(substrate, time, debug));
+        addState(new PlanetWorld(substrate, time, trial, maxTrails, random, debug));
     }
     
 }

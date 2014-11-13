@@ -27,6 +27,7 @@ public abstract class Entity {
     
     public Body body;
     public BodyDef def;
+    public BodyType bodyType = BodyType.DYNAMIC;
     
     public GameWorld world;
     public static World physicsWorld;
@@ -52,7 +53,7 @@ public abstract class Entity {
         def.position.set(x, y);
         def.angle = angle;
         def.linearVelocity = velocity;
-        def.type = BodyType.DYNAMIC;
+        def.type = bodyType;
         body = world.physicsWorld.createBody(def);
         body.setLinearDamping(1.75F);
         body.setAngularDamping(2.75F);

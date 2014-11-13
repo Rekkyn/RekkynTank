@@ -13,39 +13,56 @@ import rekkyn.tank.skeleton.Skeleton;
 
 import com.anji.integration.Activator;
 
-public class RoamWorld extends GameWorld {
+public class PlanetWorld extends GameWorld {
     
     Activator substrate;
     Creature creature;
+    Planet planet;
     
+    public double initialDist = 0;
+    public double minDist = 0;
     public int time;
+    public int trial;
+    public int trialTime;
+    public int maxTrials;
+    public boolean random;
     public boolean debug;
-    
-    public boolean outOfBounds = false;
-    public float boundaryStart = 500;
-    public float boundaryEnd = 500;
-    public float boundary = boundaryStart;
     
     float relX, relY;
     float velX, velY;
     float angV;
     float lPow, rPow;
     
-    public RoamWorld(Activator substrate, int time, boolean debug) {
+    public PlanetWorld(Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug) {
         this.substrate = substrate;
         this.time = time;
+        this.trial = trial;
+        this.maxTrials = maxTrials;
+        this.random = random;
         this.debug = debug;
     }
     
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         super.init(container, game);
-        Skeleton skeleton = Skeleton.defaultSkeleton();
+        Skeleton skeleton = new Skeleton();
+        skeleton.addSegment(0, 1).addSegment(1, 1).addSegment(-1, 0).addSegment(-1, -1).addSegment(-2, -1).addSegment(-3, -1);
+        skeleton.getSegment(-1, 0).addMotor(true);
+        skeleton.getSegment(-2, -1).addMotor(true);
+        skeleton.getSegment(-3, -1).addMotor(true);
         creature = new Creature(0, 30, this, skeleton);
         creature.angle = (float) (Math.PI / 2);
         add(creature);
         
-        add(new Planet(0, 0, 100, this));
+        planet = new Planet(0, 0, 100, this);
+        add(planet);
+        
+        initialDist = distance();
+        minDist = distance();
+        
+        camera.x = 43;
+        camera.y = 28;
+        camera.zoom = 2.4F;
         
         // physicsWorld.setGravity(new Vec2(0, -15));
         // camera.setFollowing(creature);
@@ -122,19 +139,26 @@ public class RoamWorld extends GameWorld {
             }
         }
         
-        boundary = (boundaryEnd - boundaryStart) / time * tickCount + boundaryStart;
+        Vec2 surface = planet.surfaceCoords(creature.body.getWorldCenter());
+        Vec2 relPos = new Vec2(planet.point.x - surface.x, surface.y);
+        Vec2 dist = creature.body.getWorldCenter().sub(planet.body.getWorldCenter());
+        float angle = (float) Math.atan2(dist.y, dist.x);
         
-        if (distance(creature, new Vec2(0, 0)) > boundary) outOfBounds = true;
-        
-        Vec2 relPos = Util.rotateVec(creature.body.getLocalPoint(new Vec2(0, 0)), (float) (Math.PI / 2));
-        
-        relX = (float) (2 / (1 + Math.exp(-0.2 * relPos.x)) - 1);
-        relY = (float) (2 / (1 + Math.exp(-0.2 * relPos.y)) - 1);
-        velX = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).x / 10;
-        velY = Util.rotateVec(creature.body.m_linearVelocity, (float) (Math.PI / 2 - creature.angle)).y / 10;
-        angV = creature.body.m_angularVelocity / 8;
+        relX = (float) (2 / (1 + Math.exp(-0.07 * relPos.x)) - 1);
+        relY = (float) (2 / (1 + Math.exp(-0.03 * relPos.y)) - 1);
+        velX = Vec2.dot(creature.velocity, new Vec2(-dist.y, dist.x)) / dist.length();
+        velY = Vec2.dot(creature.velocity, dist) / dist.length();
+        velX = (float) (2 / (1 + Math.exp(-0.06 * velX)) - 1);
+        velY = (float) (2 / (1 + Math.exp(-0.05 * velX)) - 1);
+        angV = creature.body.m_angularVelocity / 50;
         lPow = creature.leftPower;
         rPow = creature.rightPower;
+        
+        float relAngle = (float) ((creature.body.getAngle() - angle) / Math.PI);
+        while (relAngle > 1)
+            relAngle -= 2;
+        while (relAngle < -1)
+            relAngle += 2;
         
         if (substrate != null) {
             double[] inputs = new double[8];
@@ -145,17 +169,23 @@ public class RoamWorld extends GameWorld {
             inputs[4] = angV;
             inputs[5] = lPow;
             inputs[6] = rPow;
-            inputs[7] = boundaryStart > boundaryEnd ? boundary / boundaryStart : boundary / boundaryEnd;
+            inputs[7] = relAngle;
             
             double[] outputs = substrate.next(inputs);
             
             creature.setMotors((float) outputs[0] * 2 - 1, (float) outputs[1] * 2 - 1);
         }
         
-        if (container != null && (tickCount > time || outOfBounds)) {
+        if (distance() < minDist) minDist = distance();
+        
+        if (container != null && tickCount > time) {
             container.exit();
         }
         
+    }
+    
+    public double distance() {
+        return creature.body.getWorldCenter().sub(planet.worldCoords(planet.point)).length();
     }
     
     @Override
@@ -170,11 +200,6 @@ public class RoamWorld extends GameWorld {
             g.drawRect(250, 50, angV * 20, 10);
             
         }
-        g.pushTransform();
-        g.scale(camera.zoom, camera.zoom);
-        g.translate(-camera.x + Game.width / camera.zoom / 2, camera.y + Game.height / camera.zoom / 2);
-        g.drawOval(-boundary, -boundary, 2 * boundary, 2 * boundary);
-        g.popTransform();
     }
     
     public double distance(Entity e, Vec2 p) {

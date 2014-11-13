@@ -3,6 +3,7 @@ package rekkyn.tank;
 import org.newdawn.slick.*;
 import org.newdawn.slick.state.StateBasedGame;
 
+import rekkyn.tank.AI.AIGame;
 import rekkyn.tank.AI.AIWorld;
 import rekkyn.tank.skeleton.Skeleton;
 
@@ -29,7 +30,7 @@ public class Game extends StateBasedGame {
     public static void main(String[] args) {
         
         try {
-            appgc = new AppGameContainer(new Game(NAME));
+            appgc = new AppGameContainer(new AIGame("Test", null, 50000));
             // width = appgc.getScreenWidth();
             // height = appgc.getScreenHeight();
             appgc.setDisplayMode(width, height, false);
