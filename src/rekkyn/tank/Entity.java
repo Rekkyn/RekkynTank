@@ -76,8 +76,7 @@ public abstract class Entity {
     public void prerender(Graphics g) {
         g.pushTransform();
         g.scale(world.camera.zoom, world.camera.zoom);
-        g.translate(world.partialTicks * (x - prevX) - world.camera.x + Game.width / world.camera.zoom / 2, world.partialTicks
-                * (prevY - y) + world.camera.y + Game.height / world.camera.zoom / 2);
+        g.translate(-world.camera.x + Game.width / world.camera.zoom / 2, world.camera.y + Game.height / world.camera.zoom / 2);
         g.rotate(x, -y, (float) Math.toDegrees(-angle));
         g.rotate(x, -y, world.partialTicks * (float) Math.toDegrees(-angle + prevAngle));
     }

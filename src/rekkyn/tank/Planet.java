@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.jbox2d.collision.shapes.CircleShape;
 import org.jbox2d.common.Vec2;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Graphics;
 
 public class Planet extends Entity {
@@ -14,7 +15,7 @@ public class Planet extends Entity {
     
     float dampRange = 150F;
     
-    public Vec2 point = new Vec2(130, 0);
+    public Vec2 point = new Vec2(90, 0);
     
     public Planet(float x, float y, GameWorld world) {
         this(x, y, 20, world);
@@ -84,8 +85,10 @@ public class Planet extends Entity {
         g.drawOval(x - radius - dampRange, -y - radius - dampRange, 2 * (radius + dampRange), 2 * (radius + dampRange));
         
         Vec2 pos = worldCoords(point);
-        g.setColor(Colours.getAccent());
-        g.fillOval(pos.x - 2, -pos.y - 2, 4, 4);
+        Color col = Util.copyColor(Colours.getAccent());
+        col.a = 0.25F;
+        g.setColor(col);
+        g.fillOval(pos.x - 10, -pos.y - 10, 20, 20);
     }
     
     @Override

@@ -35,6 +35,7 @@ public class AIGame extends StateBasedGame {
         this(name);
         this.substrate = substrate;
         this.time = time;
+        debug = true;
     }
     
     @Override

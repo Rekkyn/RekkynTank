@@ -32,6 +32,7 @@ public class PlanetWorld extends GameWorld {
     float velX, velY;
     float angV;
     float lPow, rPow;
+    float relAngle;
     
     public PlanetWorld(Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug) {
         this.substrate = substrate;
@@ -46,6 +47,24 @@ public class PlanetWorld extends GameWorld {
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         super.init(container, game);
         Skeleton skeleton = new Skeleton();
+        /* skeleton.addSegment(0, 8).addSegment(0, 9).addSegment(-1, 9).addSegment(-2, 9).addSegment(0, 14).addSegment(4, 14)
+                 .addSegment(5, 14).addSegment(4, 15).addSegment(-5, -1).addSegment(-6, -1).addSegment(-7, -1).addSegment(-8, -1)
+                 .addSegment(-9, -1).addSegment(-10, -1).addSegment(-11, -1).addSegment(-12, -1).addSegment(-8, -2).addSegment(-12, -1)
+                 .addSegment(-7, 6).addSegment(-7, 7).addSegment(-7, 8).addSegment(-8, 6).addSegment(-8, 7).addSegment(-8, 8)
+                 .addSegment(-9, 6).addSegment(-9, 7).addSegment(-9, 8);
+         skeleton.getSegment(-1, 9).addMotor(true);
+         skeleton.getSegment(-2, 9).addMotor(true);
+         skeleton.getSegment(-12, -1).addMotor(true);
+         skeleton.getSegment(-7, 6).addMotor(true);
+         skeleton.getSegment(-7, 7).addMotor(true);
+         skeleton.getSegment(-7, 8).addMotor(true);
+         skeleton.getSegment(-8, 6).addMotor(true);
+         skeleton.getSegment(-8, 7).addMotor(true);
+         skeleton.getSegment(-8, 8).addMotor(true);
+         skeleton.getSegment(-9, 6).addMotor(true);
+         skeleton.getSegment(-9, 7).addMotor(true);
+         skeleton.getSegment(-9, 8).addMotor(true);*/
+        
         skeleton.addSegment(0, 1).addSegment(1, 1).addSegment(-1, 0).addSegment(-1, -1).addSegment(-2, -1).addSegment(-3, -1);
         skeleton.getSegment(-1, 0).addMotor(true);
         skeleton.getSegment(-2, -1).addMotor(true);
@@ -57,15 +76,16 @@ public class PlanetWorld extends GameWorld {
         planet = new Planet(0, 0, 100, this);
         add(planet);
         
+        float range = 90;
+        float x = trial * range / (maxTrials - 1) - range / 2;
+        planet.point = new Vec2(x, 0);
+        
         initialDist = distance();
         minDist = distance();
         
-        camera.x = 43;
-        camera.y = 28;
-        camera.zoom = 2.4F;
-        
         // physicsWorld.setGravity(new Vec2(0, -15));
-        // camera.setFollowing(creature);
+        camera.zoom = 4F;
+        camera.setFollowing(creature);
     }
     
     @Override
@@ -120,6 +140,8 @@ public class PlanetWorld extends GameWorld {
                 camera.zoom *= 0.99;
             }
             camera.update();
+            // System.out.println(camera.x + "   " + camera.y + "    " +
+            // camera.zoom);
             
         }
         
@@ -140,12 +162,13 @@ public class PlanetWorld extends GameWorld {
         }
         
         Vec2 surface = planet.surfaceCoords(creature.body.getWorldCenter());
-        Vec2 relPos = new Vec2(planet.point.x - surface.x, surface.y);
+        float altDist = (surface.x >= 0 ? 360 : -360) - surface.x + planet.point.x;
+        relX = Math.abs(planet.point.x - surface.x) < Math.abs(altDist) ? planet.point.x - surface.x : altDist;
         Vec2 dist = creature.body.getWorldCenter().sub(planet.body.getWorldCenter());
         float angle = (float) Math.atan2(dist.y, dist.x);
         
-        relX = (float) (2 / (1 + Math.exp(-0.07 * relPos.x)) - 1);
-        relY = (float) (2 / (1 + Math.exp(-0.03 * relPos.y)) - 1);
+        relX = (float) (2 / (1 + Math.exp(-0.07 * relX)) - 1);
+        relY = (float) (2 / (1 + Math.exp(-0.03 * surface.y)) - 1);
         velX = Vec2.dot(creature.velocity, new Vec2(-dist.y, dist.x)) / dist.length();
         velY = Vec2.dot(creature.velocity, dist) / dist.length();
         velX = (float) (2 / (1 + Math.exp(-0.06 * velX)) - 1);
@@ -154,7 +177,7 @@ public class PlanetWorld extends GameWorld {
         lPow = creature.leftPower;
         rPow = creature.rightPower;
         
-        float relAngle = (float) ((creature.body.getAngle() - angle) / Math.PI);
+        relAngle = (float) ((creature.body.getAngle() - angle) / Math.PI);
         while (relAngle > 1)
             relAngle -= 2;
         while (relAngle < -1)

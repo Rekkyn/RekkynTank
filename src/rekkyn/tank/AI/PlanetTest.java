@@ -54,16 +54,24 @@ public class PlanetTest extends HyperNEATFitnessFunction {
             long gotTime = 0;
             for (int j = 0; j < time; j++) {
                 world.tick(null, null);
-                if (world.distance() < 2 && gotTime == 0) gotTime = world.tickCount;
+                // if (world.distance() < 2 && gotTime == 0) gotTime =
+                // world.tickCount;
             }
             
-            if (world.distance() < 2) {
-                fitness += 1D - 0.5D / time * gotTime;
+            if (world.distance() < 10) {
+                // fitness += 1D - 0.5D / time * gotTime;
+                fitness += 0.5;
+                fitness += 0.004 / (world.relAngle * world.relAngle + 0.01);
+                fitness += 0.4 / (world.creature.velocity.lengthSquared() + 4);
             } else {
                 if (min) {
-                    fitness += 0.5D - 0.5D / world.initialDist * world.minDist;
+                    // fitness += 0.5D - 0.5D / world.initialDist *
+                    // world.minDist;
+                    fitness += Math.pow(0.99, world.minDist + 68.9676);
                 } else {
-                    fitness += Math.pow(0.96, world.distance() + 16.9797);
+                    fitness += Math.pow(0.97, world.minDist + 22.7566);
+                    // fitness += Math.max(0.5D - 0.5D / world.initialDist *
+                    // world.distance(), 0);
                 }
             }
             
