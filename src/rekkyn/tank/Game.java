@@ -29,8 +29,18 @@ public class Game extends StateBasedGame {
     
     public static void main(String[] args) {
         
+        /*PlanetWorld world = new PlanetWorld(new RekkynAI(), 0, 1, 1, false, false);
         try {
-            appgc = new AppGameContainer(new AIGame("Test", null, 500));
+            world.init(null, null);
+        } catch (SlickException e) {
+            e.printStackTrace();
+        }
+        while (true) {
+            world.tick(null, null);
+        }*/
+        
+        try {
+            appgc = new AppGameContainer(new AIGame("Test", null, 0));
             // width = appgc.getScreenWidth();
             // height = appgc.getScreenHeight();
             appgc.setDisplayMode(width, height, false);

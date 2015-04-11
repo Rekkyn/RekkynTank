@@ -11,11 +11,9 @@ import rekkyn.tank.*;
 import rekkyn.tank.Game;
 import rekkyn.tank.skeleton.Skeleton;
 
-import com.anji.integration.Activator;
-
 public class PlanetWorld extends GameWorld {
     
-    Activator substrate;
+    CustomAI ai;
     Creature creature;
     Planet planet;
     
@@ -34,8 +32,8 @@ public class PlanetWorld extends GameWorld {
     float lPow, rPow;
     float relAngle;
     
-    public PlanetWorld(Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug) {
-        this.substrate = substrate;
+    public PlanetWorld(CustomAI ai, int time, int trial, int maxTrials, boolean random, boolean debug) {
+        this.ai = ai;
         this.time = time;
         this.trial = trial;
         this.maxTrials = maxTrials;
@@ -76,6 +74,8 @@ public class PlanetWorld extends GameWorld {
         planet = new Planet(0, 0, 100, this);
         add(planet);
         
+        add(new Planet(0, 1000, 50, this));
+        
         float range = 90;
         float x = trial * range / (maxTrials - 1) - range / 2;
         planet.point = new Vec2(x, 0);
@@ -99,7 +99,7 @@ public class PlanetWorld extends GameWorld {
         
         if (container != null) {
             Input input = container.getInput();
-            if (substrate == null) {
+            if (ai == null) {
                 float leftPower;
                 float rightPower;
                 if (input.isKeyDown(Input.KEY_W)) {
@@ -167,13 +167,10 @@ public class PlanetWorld extends GameWorld {
         Vec2 dist = creature.body.getWorldCenter().sub(planet.body.getWorldCenter());
         float angle = (float) Math.atan2(dist.y, dist.x);
         
-        relX = (float) (2 / (1 + Math.exp(-0.07 * relX)) - 1);
-        relY = (float) (2 / (1 + Math.exp(-0.03 * surface.y)) - 1);
+        relY = surface.y;
         velX = Vec2.dot(creature.velocity, new Vec2(-dist.y, dist.x)) / dist.length();
         velY = Vec2.dot(creature.velocity, dist) / dist.length();
-        velX = (float) (2 / (1 + Math.exp(-0.06 * velX)) - 1);
-        velY = (float) (2 / (1 + Math.exp(-0.05 * velX)) - 1);
-        angV = creature.body.m_angularVelocity / 50;
+        angV = creature.body.m_angularVelocity;
         lPow = creature.leftPower;
         rPow = creature.rightPower;
         
@@ -183,8 +180,8 @@ public class PlanetWorld extends GameWorld {
         while (relAngle < -1)
             relAngle += 2;
         
-        if (substrate != null) {
-            double[] inputs = new double[8];
+        if (ai != null) {
+            float[] inputs = new float[8];
             inputs[0] = relX;
             inputs[1] = relY;
             inputs[2] = velX;
@@ -194,14 +191,18 @@ public class PlanetWorld extends GameWorld {
             inputs[6] = rPow;
             inputs[7] = relAngle;
             
-            double[] outputs = substrate.next(inputs);
+            float[] outputs = ai.getOutput(inputs);
+            System.out.println(relY + "         " + outputs[0]);
             
-            creature.setMotors((float) outputs[0] * 2 - 1, (float) outputs[1] * 2 - 1);
+            outputs[0] = Math.max(-1, Math.min(1, outputs[0]));
+            outputs[1] = Math.max(-1, Math.min(1, outputs[1]));
+            
+            creature.setMotors(outputs[0], outputs[1]);
         }
         
         if (distance() < minDist) minDist = distance();
         
-        if (container != null && tickCount > time) {
+        if (container != null && tickCount > time && time != 0) {
             container.exit();
         }
         

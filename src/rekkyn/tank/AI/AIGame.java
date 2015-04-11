@@ -4,11 +4,9 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
-import com.anji.integration.Activator;
-
 public class AIGame extends StateBasedGame {
     
-    Activator substrate;
+    CustomAI ai;
     int time;
     int trial;
     int maxTrails;
@@ -20,9 +18,9 @@ public class AIGame extends StateBasedGame {
         super(name);
     }
     
-    public AIGame(String name, Activator substrate, int time, int trial, int maxTrials, boolean random, boolean debug, boolean chain) {
+    public AIGame(String name, CustomAI ai, int time, int trial, int maxTrials, boolean random, boolean debug, boolean chain) {
         this(name);
-        this.substrate = substrate;
+        this.ai = ai;
         this.time = time;
         this.trial = trial;
         maxTrails = maxTrials;
@@ -31,9 +29,9 @@ public class AIGame extends StateBasedGame {
         this.chain = chain;
     }
     
-    public AIGame(String name, Activator substrate, int time) {
+    public AIGame(String name, CustomAI ai, int time) {
         this(name);
-        this.substrate = substrate;
+        this.ai = ai;
         this.time = time;
         debug = true;
     }
@@ -43,7 +41,7 @@ public class AIGame extends StateBasedGame {
         // addState(new AIWorld(substrate, time, trial, maxTrails, random,
         // debug, chain));
         // addState(new RetrieveWorld(substrate, time));
-        addState(new PlanetWorld(substrate, time, trial, maxTrails, random, debug));
+        addState(new PlanetWorld(ai, time, trial, maxTrails, random, debug));
     }
     
 }

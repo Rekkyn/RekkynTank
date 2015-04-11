@@ -1,6 +1,6 @@
 package rekkyn.tank;
 
-import java.util.Random;
+import java.util.*;
 
 import org.jbox2d.common.Vec2;
 import org.jbox2d.dynamics.*;
@@ -37,6 +37,9 @@ public abstract class Entity {
     
     public boolean init = false;
     
+    public Map<Entity, Float> linearDamp = new HashMap<Entity, Float>();
+    public Map<Entity, Float> angularDamp = new HashMap<Entity, Float>();
+    
     public Entity(float x, float y, GameWorld world) {
         this.x = x;
         this.y = y;
@@ -71,6 +74,7 @@ public abstract class Entity {
         y = body.getPosition().y;
         angle = body.getAngle();
         velocity = body.getLinearVelocity();
+        
     }
     
     public void prerender(Graphics g) {

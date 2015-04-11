@@ -57,6 +57,7 @@ public class Planet extends Entity {
                 float initialAngDamp = 2.75F;
                 
                 float damp = (float) (initialDamp * Math.pow(1 - distFromSurface / dampRange, 3));
+                if (e instanceof Creature) System.out.println(e.body.getWorldCenter());
                 float angDamp = (float) (initialAngDamp * Math.pow(1 - distFromSurface / dampRange, 3));
                 e.body.setLinearDamping(damp);
                 e.body.setAngularDamping(angDamp);
