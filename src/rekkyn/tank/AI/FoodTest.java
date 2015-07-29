@@ -7,6 +7,7 @@ import org.newdawn.slick.SlickException;
 import com.anji.integration.Activator;
 import com.ojcoleman.ahni.evaluation.HyperNEATFitnessFunction;
 import com.ojcoleman.ahni.hyperneat.Properties;
+import com.ojcoleman.ahni.util.Point;
 
 public class FoodTest extends HyperNEATFitnessFunction {
     
@@ -58,7 +59,7 @@ public class FoodTest extends HyperNEATFitnessFunction {
                 world.tick(null, null);
                 if (world.gotFood) {
                     if (chain) {
-                        fitness += Math.pow(0.997, world.trialTime);
+                        fitness += 1;
                         world.addFood();
                     } else {
                         break;
@@ -67,8 +68,10 @@ public class FoodTest extends HyperNEATFitnessFunction {
             }
             
             if (chain) {
+                double initialDist = world.initialDist;
                 double distance = world.distance(world.creature, world.food);
-                fitness += Math.pow(0.954842, distance + 15);
+                if (distance > initialDist) distance = initialDist;
+                fitness += 1 - distance / initialDist;
                 fitness /= 10;
             } else {
                 if (world.gotFood) {
@@ -102,5 +105,38 @@ public class FoodTest extends HyperNEATFitnessFunction {
         
         genotype.setPerformanceValue(fitness / trials);
         return fitness / trials;
+    }
+    
+    @Override
+    public int[] getLayerDimensions(int layer, int totalLayerCount) {
+        if (layer == 0) // Input layer.
+            return new int[] { 7, 1 };
+        else if (layer == totalLayerCount - 1) { // Output layer.
+            return new int[] { 2, 1 };
+        }
+        return null;
+    }
+    
+    @Override
+    public Point[] getNeuronPositions(int layer, int totalLayerCount) {
+        // Coordinates are given in unit ranges and translated to whatever range
+        // is specified by the
+        // experiment properties.
+        Point[] positions = null;
+        if (layer == 0) { // Input layer.
+            positions = new Point[7];
+            positions[0] = new Point(0, 1, 0);
+            positions[1] = new Point(0, 0.8, 0);
+            positions[2] = new Point(0, 0.6, 0);
+            positions[3] = new Point(0, 0.4, 0);
+            positions[4] = new Point(0, 0.2, 0);
+            positions[5] = new Point(0.25, 0.5, 0);
+            positions[6] = new Point(0.75, 0.5, 0);
+        } else if (layer == totalLayerCount - 1) { // Output layer.
+            positions = new Point[2];
+            positions[0] = new Point(0.25, 0.5, 1);
+            positions[1] = new Point(0.75, 0.5, 1);
+        }
+        return positions;
     }
 }

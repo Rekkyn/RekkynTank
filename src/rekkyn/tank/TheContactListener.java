@@ -66,6 +66,6 @@ public class TheContactListener implements ContactListener {
         if (angle < -Math.PI / 2 && angle > -3 * Math.PI / 4) return 3;
         if (angle > -Math.PI && angle < -3 * Math.PI / 4) return 4;
         
-        return -1;
+        return 0;
     }
 }

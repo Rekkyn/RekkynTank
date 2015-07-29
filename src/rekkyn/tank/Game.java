@@ -30,7 +30,7 @@ public class Game extends StateBasedGame {
     public static void main(String[] args) {
         
         try {
-            appgc = new AppGameContainer(new AIGame("Test", null, 500));
+            appgc = new AppGameContainer(new AIGame("Test", null, 5000));
             // width = appgc.getScreenWidth();
             // height = appgc.getScreenHeight();
             appgc.setDisplayMode(width, height, false);

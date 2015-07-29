@@ -9,7 +9,6 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import rekkyn.tank.*;
 import rekkyn.tank.Game;
-import rekkyn.tank.skeleton.Mouth;
 import rekkyn.tank.skeleton.Skeleton;
 
 import com.anji.integration.Activator;
@@ -49,10 +48,7 @@ public class AIWorld extends GameWorld {
     @Override
     public void init(GameContainer container, StateBasedGame game) throws SlickException {
         super.init(container, game);
-        Skeleton skeleton = new Skeleton();
-        skeleton.addSegment(0, 1).addSegment(0, 2).addSegment(0, 3);
-        skeleton.getSegment(0, 2).addMotor(true);
-        skeleton.addElement(new Mouth(), 0, 3, 1);
+        Skeleton skeleton = Skeleton.defaultSkeleton();
         creature = new Creature(0, 0, this, skeleton);
         creature.angle = (float) (Math.PI / 2);
         add(creature);
@@ -73,7 +69,13 @@ public class AIWorld extends GameWorld {
     }
     
     public void addFood() {
-        float angle = (float) (rand.nextFloat() * 2 * Math.PI);
+        float angle = 0;
+        if (random) {
+            angle = (float) (rand.nextFloat() * 2 * Math.PI);
+        } else {
+            angle = (float) (Math.PI / 4 * trial);
+        }
+        trial++;
         food = new Food((float) Math.cos(angle) * 15 + creature.x, (float) Math.sin(angle) * 15 + creature.y, this);
         add(food);
         gotFood = false;
@@ -173,6 +175,7 @@ public class AIWorld extends GameWorld {
             inputs[4] = angV;
             inputs[5] = lPow;
             inputs[6] = rPow;
+            Perrin p = new HashMap<>();
             
             double[] outputs = substrate.next(inputs);
             
